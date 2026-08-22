@@ -37,16 +37,31 @@ export const AuthProvider = ({ children }) => {
     fetchMe();
   }, [token]);
 
+   const parseJsonResponse = async (res, fallbackMessage) => {
+    const text = await res.text();
+    let data = {};
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        throw new Error(
+          `Server returned an unexpected response (status ${res.status}). Is the backend running and reachable?`
+        );
+      }
+    }
+    if (!res.ok) {
+      throw new Error(data.error || fallbackMessage);
+    }
+    return data;
+  };
+
   const login = async (emailOrUsername, password) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ emailOrUsername, password })
     });
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.error || "Login failed.");
-    }
+    const data = await parseJsonResponse(res, "Login failed.");
     localStorage.setItem("qpm_token", data.token);
     setToken(data.token);
     setUser(data.user);
@@ -59,10 +74,7 @@ export const AuthProvider = ({ children }) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password, bio })
     });
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.error || "Signup failed.");
-    }
+    const data = await parseJsonResponse(res, "Signup failed.");
     localStorage.setItem("qpm_token", data.token);
     setToken(data.token);
     setUser(data.user);
