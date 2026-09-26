@@ -1,0 +1,140 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-dim);
+  font-size: var(--fs-sm);
+}
+
+.breadcrumb a {
+  color: var(--text-muted);
+}
+
+.breadcrumb a:hover {
+  color: var(--text);
+}
+
+.breadcrumb li {
+  display: flex;
+  align-items: center;
+}
+
+.crumbCurrent {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-cyan);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header {
+  margin: var(--space-5) 0 var(--space-8);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.name {
+  font-size: var(--fs-3xl);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.version {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.description {
+  max-width: 760px;
+  margin-top: var(--space-3);
+  color: var(--text-muted);
+  font-size: var(--fs-lg);
+}
+
+.placeholder {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  margin-top: var(--space-5);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.meta li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.meta svg {
+  color: var(--text-dim);
+}
+
+.meta strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Two-column layout: main content + sidebar. On narrow screens the install
+   card moves above the content and the remaining sidebar cards below it. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-areas:
+    "main install"
+    "main side";
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  gap: var(--space-6);
+}
+
+.main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.panel {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: var(--radius-md);
+}
+
+.skeletonGap {
+  margin-top: var(--space-3);
+}
+
+.skeletonSide {
+  grid-area: side;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "install"
+      "main"
+      "side";
+    grid-template-rows: auto;
+  }
+
+  .skeletonSide {
+    grid-row: auto;
+  }
+}

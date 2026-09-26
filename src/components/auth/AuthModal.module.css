@@ -1,0 +1,56 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--space-6);
+  text-align: center;
+}
+
+.logo {
+  margin-bottom: var(--space-4);
+  border-radius: 12px;
+  box-shadow: 0 0 24px var(--primary-glow);
+}
+
+.title {
+  font-size: var(--fs-xl);
+}
+
+.subtitle {
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.form > button[type="submit"] {
+  margin-top: var(--space-2);
+}
+
+.switch {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+
+.switchButton {
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-xs);
+  color: var(--text-cyan);
+  font-weight: 700;
+}
+
+.switchButton:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

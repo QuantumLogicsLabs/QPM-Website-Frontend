@@ -1,0 +1,4 @@
+.copied,
+.copied:hover:not(:disabled) {
+  color: var(--emerald);
+}

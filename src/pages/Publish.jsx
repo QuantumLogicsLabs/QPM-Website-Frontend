@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Upload, HardDrive, CheckCircle2, AlertTriangle, FileArchive, ArrowRight, Box } from "lucide-react";
+import { Upload, HardDrive, CheckCircle2, FileArchive, ArrowRight, Box } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useAuth } from "../context/AuthContext";
 
 export default function Publish() {
-  const { user, token } = useAuth();
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -118,18 +118,6 @@ export default function Publish() {
             Upload package archive (.tgz) to store on Google Drive & serve to QPM CLI
           </p>
         </div>
-
-        {!user && (
-          <div style={styles.warningBox}>
-            <AlertTriangle size={20} color="var(--accent-amber)" />
-            <div>
-              <strong>Note: You are currently not logged in.</strong>
-              <p style={{ fontSize: "0.85rem", marginTop: "2px" }}>
-                Publishing as guest will assign package ownership to community. Log in to claim author rights.
-              </p>
-            </div>
-          </div>
-        )}
 
         {error && <div style={styles.errorAlert}>{error}</div>}
         {success && <div style={styles.successAlert}>{success}</div>}
@@ -289,17 +277,6 @@ const styles = {
     color: "var(--accent-cyan)",
     fontSize: "0.85rem",
     fontWeight: "600"
-  },
-  warningBox: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    background: "rgba(245, 158, 11, 0.12)",
-    border: "1px solid rgba(245, 158, 11, 0.3)",
-    borderRadius: "var(--radius-md)",
-    padding: "14px 20px",
-    marginBottom: "24px",
-    color: "#fde68a"
   },
   errorAlert: {
     background: "rgba(239, 68, 68, 0.12)",

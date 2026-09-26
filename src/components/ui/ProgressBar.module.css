@@ -1,0 +1,29 @@
+.track {
+  position: relative;
+  height: 6px;
+  overflow: hidden;
+  background: rgba(148, 163, 184, 0.14);
+  border-radius: var(--radius-full);
+}
+
+.bar {
+  height: 100%;
+  background: var(--gradient-brand);
+  border-radius: inherit;
+  transition: width var(--duration-base) var(--ease-standard);
+}
+
+.indeterminate {
+  position: absolute;
+  width: 40%;
+  animation: slide 1.2s var(--ease-standard) infinite;
+}
+
+@keyframes slide {
+  from {
+    left: -40%;
+  }
+  to {
+    left: 100%;
+  }
+}

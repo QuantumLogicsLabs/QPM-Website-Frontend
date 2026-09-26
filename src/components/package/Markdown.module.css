@@ -1,0 +1,136 @@
+.prose {
+  min-width: 0;
+  color: var(--text);
+  font-size: 0.975rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+.prose :where(h1, h2, h3, h4, h5, h6) {
+  margin: 1.8em 0 0.6em;
+  line-height: 1.3;
+}
+
+.prose h1 {
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid var(--border);
+  font-size: 1.85rem;
+}
+
+.prose h2 {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+  font-size: 1.45rem;
+}
+
+.prose h3 {
+  font-size: 1.2rem;
+}
+
+.prose h4 {
+  font-size: 1.05rem;
+}
+
+.prose :where(p, ul, ol, blockquote, pre, table) {
+  margin: 0 0 1.1em;
+}
+
+.prose :where(ul, ol) {
+  padding-left: 1.5em;
+}
+
+.prose li + li {
+  margin-top: 0.3em;
+}
+
+.prose li::marker {
+  color: var(--text-dim);
+}
+
+.prose a {
+  color: var(--text-cyan);
+  text-decoration: underline;
+  text-decoration-color: rgba(103, 232, 249, 0.35);
+  text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  text-decoration-color: currentColor;
+}
+
+.prose strong {
+  color: #fff;
+}
+
+.prose :not(pre) > code {
+  padding: 0.15em 0.4em;
+  background: rgba(148, 163, 184, 0.14);
+  border-radius: var(--radius-xs);
+  color: #e0e7ff;
+  font-size: 0.86em;
+}
+
+.prose pre {
+  padding: var(--space-4) var(--space-5);
+  overflow-x: auto;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.prose pre code {
+  color: #e2e8f0;
+}
+
+.prose blockquote {
+  padding: 0.25em 1em;
+  border-left: 3px solid var(--primary);
+  color: var(--text-muted);
+}
+
+.prose hr {
+  margin: 2em 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.prose table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.prose :where(th, td) {
+  padding: 0.5em 0.9em;
+  border: 1px solid var(--border-strong);
+  text-align: left;
+}
+
+.prose th {
+  background: rgba(148, 163, 184, 0.08);
+  font-weight: 600;
+}
+
+.prose input[type="checkbox"] {
+  margin-right: 0.4em;
+  accent-color: var(--primary);
+}
