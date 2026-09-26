@@ -1,0 +1,114 @@
+.root {
+  position: relative;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 38px;
+  padding: 0 var(--space-2) 0 4px;
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  color: var(--text);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+.trigger:hover,
+.trigger[aria-expanded="true"] {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.36);
+}
+
+.username {
+  max-width: 140px;
+  overflow: hidden;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  color: var(--text-dim);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: var(--z-dropdown);
+  width: 240px;
+  padding: var(--space-2);
+  background: rgba(20, 27, 44, 0.98);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  animation: pop var(--duration-base) var(--ease-out);
+  transform-origin: top right;
+}
+
+.menuHeader {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  margin-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border);
+}
+
+.caption {
+  color: var(--text-dim);
+  font-size: var(--fs-xs);
+}
+
+.handle {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  text-align: left;
+}
+
+.item:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.separator {
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--border);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+}

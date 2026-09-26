@@ -1,0 +1,89 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+}
+
+.header {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-sm);
+  background: var(--amber-soft);
+  color: var(--text-amber);
+}
+
+.title {
+  font-size: var(--fs-lg);
+}
+
+.description {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.tokenRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  background: var(--surface-inset);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+}
+
+.token {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  color: var(--text-cyan);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.token::-webkit-scrollbar {
+  display: none;
+}
+
+.tokenActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-1);
+}
+
+.usage summary {
+  width: fit-content;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.usage summary:hover {
+  color: var(--text);
+}
+
+.code {
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  overflow-x: auto;
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  line-height: 1.7;
+}

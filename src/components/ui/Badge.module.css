@@ -1,0 +1,49 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.indigo {
+  background: var(--primary-soft);
+  border-color: rgba(99, 102, 241, 0.24);
+  color: var(--text-indigo);
+}
+
+.cyan {
+  background: var(--cyan-soft);
+  border-color: rgba(6, 182, 212, 0.24);
+  color: var(--text-cyan);
+}
+
+.emerald {
+  background: var(--emerald-soft);
+  border-color: rgba(16, 185, 129, 0.24);
+  color: var(--text-emerald);
+}
+
+.amber {
+  background: var(--amber-soft);
+  border-color: rgba(245, 158, 11, 0.24);
+  color: var(--text-amber);
+}
+
+.violet {
+  background: var(--violet-soft);
+  border-color: rgba(168, 85, 247, 0.24);
+  color: #d8b4fe;
+}
+
+.neutral {
+  background: rgba(148, 163, 184, 0.08);
+  border-color: var(--border);
+  color: var(--text-muted);
+}

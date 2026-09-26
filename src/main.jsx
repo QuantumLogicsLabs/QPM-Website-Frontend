@@ -1,16 +1,11 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import App from "./App";
-import "./index.css";
+// Global styles first so component CSS modules can override them.
+import "@/styles/index.css";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "@/app/App";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
 );

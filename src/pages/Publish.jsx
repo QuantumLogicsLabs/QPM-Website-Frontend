@@ -1,11 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Upload, HardDrive, CheckCircle2, AlertTriangle, FileArchive, ArrowRight, Box, Github } from "lucide-react";
+import {
+  Upload,
+  HardDrive,
+  CheckCircle2,
+  AlertTriangle,
+  FileArchive,
+  ArrowRight,
+  Box,
+  Github,
+} from "lucide-react";
 import confetti from "canvas-confetti";
 import { useAuth } from "../context/AuthContext";
 
 export default function Publish() {
-  const { user, token } = useAuth();
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   // "file" = upload a .tgz directly (existing flow)
@@ -38,7 +47,9 @@ export default function Publish() {
       setFile(selectedFile);
       setFileName(selectedFile.name);
       if (!name) {
-        const cleanName = selectedFile.name.replace(/\.tgz$|\.tar\.gz$/, "").replace(/-\d+\.\d+\.\d+$/, "");
+        const cleanName = selectedFile.name
+          .replace(/\.tgz$|\.tar\.gz$/, "")
+          .replace(/-\d+\.\d+\.\d+$/, "");
         setName(cleanName);
       }
     }
@@ -118,7 +129,9 @@ export default function Publish() {
       }
 
       const publishedName = data.package?.name || name;
-      setSuccess(`Package ${publishedName}@${version} published and stored in Google Drive!`);
+      setSuccess(
+        `Package ${publishedName}@${version} published and stored in Google Drive!`,
+      );
 
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 
@@ -140,23 +153,13 @@ export default function Publish() {
             <HardDrive size={16} color="var(--accent-cyan)" />
             <span>Google Drive Package Pipeline</span>
           </div>
-          <h1 style={{ fontSize: "2.4rem", marginTop: "12px" }}>Publish a Quantum Package</h1>
+          <h1 style={{ fontSize: "2.4rem", marginTop: "12px" }}>
+            Publish a Quantum Package
+          </h1>
           <p style={{ color: "var(--text-muted)", fontSize: "1.05rem" }}>
             Upload a .tgz, or import a package straight from GitHub.
           </p>
         </div>
-
-        {!user && (
-          <div style={styles.warningBox}>
-            <AlertTriangle size={20} color="var(--accent-amber)" />
-            <div>
-              <strong>Note: You are currently not logged in.</strong>
-              <p style={{ fontSize: "0.85rem", marginTop: "2px" }}>
-                Publishing as guest will assign package ownership to community. Log in to claim author rights.
-              </p>
-            </div>
-          </div>
-        )}
 
         {error && <div style={styles.errorAlert}>{error}</div>}
         {success && <div style={styles.successAlert}>{success}</div>}
@@ -181,7 +184,11 @@ export default function Publish() {
           </button>
         </div>
 
-        <form onSubmit={handlePublish} className="glass-card" style={styles.formCard}>
+        <form
+          onSubmit={handlePublish}
+          className="glass-card"
+          style={styles.formCard}
+        >
           {mode === "file" ? (
             <>
               {/* File Upload Zone */}
@@ -194,24 +201,52 @@ export default function Publish() {
                     onChange={handleFileChange}
                     style={styles.fileInput}
                   />
-                  <FileArchive size={36} color="var(--accent-cyan)" style={{ marginBottom: "8px" }} />
+                  <FileArchive
+                    size={36}
+                    color="var(--accent-cyan)"
+                    style={{ marginBottom: "8px" }}
+                  />
                   {fileName ? (
                     <div>
-                      <span style={{ fontWeight: "700", color: "#fff" }}>{fileName}</span>
-                      <p style={{ fontSize: "0.8rem", color: "var(--accent-emerald)" }}>File ready for Google Drive upload</p>
+                      <span style={{ fontWeight: "700", color: "#fff" }}>
+                        {fileName}
+                      </span>
+                      <p
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "var(--accent-emerald)",
+                        }}
+                      >
+                        File ready for Google Drive upload
+                      </p>
                     </div>
                   ) : (
                     <div>
-                      <span style={{ fontWeight: "600" }}>Click to select `.tgz` archive or drag file here</span>
-                      <p style={{ fontSize: "0.8rem", color: "var(--text-dim)", marginTop: "4px" }}>
-                        Optional: If omitted, an empty package container will be generated.
+                      <span style={{ fontWeight: "600" }}>
+                        Click to select `.tgz` archive or drag file here
+                      </span>
+                      <p
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "var(--text-dim)",
+                          marginTop: "4px",
+                        }}
+                      >
+                        Optional: If omitted, an empty package container will be
+                        generated.
                       </p>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "16px" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "2fr 1fr",
+                  gap: "16px",
+                }}
+              >
                 <div>
                   <label style={styles.label}>Package Name *</label>
                   <input
@@ -247,7 +282,13 @@ export default function Publish() {
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "16px",
+                }}
+              >
                 <div>
                   <label style={styles.label}>Keywords (comma separated)</label>
                   <input
@@ -271,7 +312,9 @@ export default function Publish() {
               </div>
 
               <div>
-                <label style={styles.label}>GitHub Repository URL (Optional, metadata only)</label>
+                <label style={styles.label}>
+                  GitHub Repository URL (Optional, metadata only)
+                </label>
                 <input
                   type="url"
                   placeholder="https://github.com/username/repository"
@@ -298,9 +341,16 @@ export default function Publish() {
               {/* GitHub import fields */}
               <div style={styles.githubBanner}>
                 <Github size={20} color="var(--accent-cyan)" />
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: 0 }}>
-                  The repo's <code>qpm.json</code> supplies the name/description/tags, and its{" "}
-                  <code>README.md</code> becomes the package's article automatically.
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "var(--text-muted)",
+                    margin: 0,
+                  }}
+                >
+                  The repo's <code>qpm.json</code> supplies the
+                  name/description/tags, and its <code>README.md</code> becomes
+                  the package's article automatically.
                 </p>
               </div>
 
@@ -316,7 +366,13 @@ export default function Publish() {
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "16px",
+                }}
+              >
                 <div>
                   <label style={styles.label}>Branch</label>
                   <input
@@ -348,7 +404,10 @@ export default function Publish() {
                   value={dependencies}
                   onChange={(e) => setDependencies(e.target.value)}
                   className="input-field"
-                  style={{ fontFamily: "var(--font-mono)", fontSize: "0.85rem" }}
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.85rem",
+                  }}
                 />
               </div>
             </>
@@ -358,14 +417,31 @@ export default function Publish() {
             type="submit"
             disabled={loading}
             className="btn btn-primary"
-            style={{ width: "100%", height: "50px", fontSize: "1.05rem", marginTop: "12px" }}
+            style={{
+              width: "100%",
+              height: "50px",
+              fontSize: "1.05rem",
+              marginTop: "12px",
+            }}
           >
             {loading ? (
-              mode === "github" ? "Importing from GitHub..." : "Uploading Tarball to Google Drive & MongoDB..."
+              mode === "github" ? (
+                "Importing from GitHub..."
+              ) : (
+                "Uploading Tarball to Google Drive & MongoDB..."
+              )
             ) : (
               <>
-                {mode === "github" ? <Github size={20} /> : <Upload size={20} />}
-                <span>{mode === "github" ? "Import & Publish from GitHub" : "Publish Package to QPM"}</span>
+                {mode === "github" ? (
+                  <Github size={20} />
+                ) : (
+                  <Upload size={20} />
+                )}
+                <span>
+                  {mode === "github"
+                    ? "Import & Publish from GitHub"
+                    : "Publish Package to QPM"}
+                </span>
               </>
             )}
           </button>
@@ -386,18 +462,7 @@ const styles = {
     border: "1px solid rgba(6, 182, 212, 0.3)",
     color: "var(--accent-cyan)",
     fontSize: "0.85rem",
-    fontWeight: "600"
-  },
-  warningBox: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    background: "rgba(245, 158, 11, 0.12)",
-    border: "1px solid rgba(245, 158, 11, 0.3)",
-    borderRadius: "var(--radius-md)",
-    padding: "14px 20px",
-    marginBottom: "24px",
-    color: "#fde68a"
+    fontWeight: "600",
   },
   errorAlert: {
     background: "rgba(239, 68, 68, 0.12)",
@@ -406,7 +471,7 @@ const styles = {
     padding: "14px 20px",
     borderRadius: "var(--radius-md)",
     marginBottom: "24px",
-    textAlign: "center"
+    textAlign: "center",
   },
   successAlert: {
     background: "rgba(16, 185, 129, 0.12)",
@@ -416,7 +481,7 @@ const styles = {
     borderRadius: "var(--radius-md)",
     marginBottom: "24px",
     textAlign: "center",
-    fontWeight: "600"
+    fontWeight: "600",
   },
   modeToggle: {
     display: "flex",
@@ -425,7 +490,7 @@ const styles = {
     background: "rgba(15, 23, 42, 0.5)",
     padding: "6px",
     borderRadius: "var(--radius-md)",
-    border: "1px solid var(--border-light)"
+    border: "1px solid var(--border-light)",
   },
   modeBtn: {
     flex: 1,
@@ -440,7 +505,7 @@ const styles = {
     color: "var(--text-muted)",
     fontWeight: "600",
     fontSize: "0.9rem",
-    cursor: "pointer"
+    cursor: "pointer",
   },
   modeBtnActive: {
     flex: 1,
@@ -455,7 +520,7 @@ const styles = {
     color: "#06222A",
     fontWeight: "700",
     fontSize: "0.9rem",
-    cursor: "pointer"
+    cursor: "pointer",
   },
   githubBanner: {
     display: "flex",
@@ -464,13 +529,13 @@ const styles = {
     background: "rgba(6, 182, 212, 0.08)",
     border: "1px solid rgba(6, 182, 212, 0.25)",
     borderRadius: "var(--radius-md)",
-    padding: "12px 16px"
+    padding: "12px 16px",
   },
   formCard: {
     padding: "36px",
     display: "flex",
     flexDirection: "column",
-    gap: "20px"
+    gap: "20px",
   },
   label: {
     display: "block",
@@ -479,7 +544,7 @@ const styles = {
     color: "var(--text-muted)",
     marginBottom: "6px",
     textTransform: "uppercase",
-    letterSpacing: "0.03em"
+    letterSpacing: "0.03em",
   },
   dropZone: {
     border: "2px dashed var(--border-light)",
@@ -489,7 +554,7 @@ const styles = {
     position: "relative",
     cursor: "pointer",
     background: "rgba(15, 23, 42, 0.5)",
-    transition: "all var(--transition-fast)"
+    transition: "all var(--transition-fast)",
   },
   fileInput: {
     position: "absolute",
@@ -497,6 +562,6 @@ const styles = {
     opacity: 0,
     cursor: "pointer",
     width: "100%",
-    height: "100%"
-  }
+    height: "100%",
+  },
 };

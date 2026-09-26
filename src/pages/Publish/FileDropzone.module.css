@@ -1,0 +1,122 @@
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-5);
+  background: var(--surface-inset);
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.dropzone:hover {
+  border-color: rgba(6, 182, 212, 0.5);
+  background: rgba(6, 182, 212, 0.05);
+}
+
+.dropzone:focus-within,
+.fileCard:focus-within {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.dragging,
+.dragging:hover {
+  border-color: var(--cyan);
+  background: var(--cyan-soft);
+}
+
+.invalid,
+.invalid:hover {
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--space-2);
+  border-radius: 50%;
+  background: var(--cyan-soft);
+  color: var(--text-cyan);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.dropzone:hover .icon,
+.dragging .icon {
+  transform: translateY(-3px);
+}
+
+.prompt {
+  color: var(--text-muted);
+}
+
+.prompt strong {
+  color: var(--text);
+}
+
+.meta {
+  color: var(--text-dim);
+  font-size: var(--fs-xs);
+}
+
+/* Selected file */
+.fileCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  background: var(--surface-inset);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: var(--radius-md);
+}
+
+.fileIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  background: var(--emerald-soft);
+  color: var(--text-emerald);
+}
+
+.fileCard.invalid .fileIcon {
+  background: var(--danger-soft);
+  color: var(--text-danger);
+}
+
+.fileInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.fileName {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileMeta {
+  color: var(--text-dim);
+  font-size: var(--fs-xs);
+}
+
+.fileActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-1);
+}

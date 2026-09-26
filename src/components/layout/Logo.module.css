@@ -1,0 +1,44 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+
+.logo:hover {
+  color: var(--text);
+}
+
+.mark {
+  border-radius: 10px;
+  box-shadow: 0 0 18px var(--primary-glow);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.logo:hover .mark {
+  transform: rotate(-6deg) scale(1.04);
+}
+
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.name {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.tag {
+  margin-top: 3px;
+  color: var(--text-cyan);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}

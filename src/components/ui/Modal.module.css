@@ -1,0 +1,58 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  overflow-y: auto;
+  background: var(--overlay);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: fadeIn var(--duration-base) var(--ease-out);
+}
+
+.dialog {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  padding: var(--space-8);
+  background: linear-gradient(180deg, rgba(26, 34, 54, 0.97) 0%, rgba(14, 20, 34, 0.98) 100%);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: popIn var(--duration-slow) var(--ease-out);
+}
+
+.dialog:focus {
+  outline: none;
+}
+
+.md {
+  max-width: 560px;
+}
+
+.close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@media (max-width: 480px) {
+  .dialog {
+    padding: var(--space-6) var(--space-5);
+  }
+}

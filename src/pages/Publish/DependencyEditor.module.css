@@ -1,0 +1,45 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.editor:focus {
+  outline: none;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: center;
+  animation: rowIn var(--duration-base) var(--ease-out);
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: var(--fs-sm);
+}
+
+.add {
+  align-self: flex-start;
+}
+
+@keyframes rowIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (max-width: 480px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr) 96px auto;
+  }
+}
