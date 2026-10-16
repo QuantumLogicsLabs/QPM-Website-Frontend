@@ -8,6 +8,7 @@ export default function NotFound() {
     <div className="container page">
       <PageMeta title="Page not found" />
       <EmptyState
+        titleAs="h1"
         icon={MapPinOff}
         title="This page doesn't exist"
         description="The link may be broken, or the page may have moved. Try searching the registry instead."

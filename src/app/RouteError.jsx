@@ -27,7 +27,7 @@ export default function RouteError() {
   return (
     <div className="container page">
       <PageMeta title={title} />
-      <EmptyState icon={TriangleAlert} tone="danger" title={title} description={description}>
+      <EmptyState titleAs="h1" icon={TriangleAlert} tone="danger" title={title} description={description}>
         <Button to="/" variant="secondary" icon={House}>
           Go home
         </Button>

@@ -33,6 +33,7 @@ export default function PackageDetails() {
         <PageMeta title={notFound ? "Package not found" : "Something went wrong"} />
         {notFound ? (
           <EmptyState
+            titleAs="h1"
             icon={PackageX}
             title="Package not found"
             description={`We couldn't find “${name}” in the QPM registry. Check the spelling, or publish it yourself.`}
@@ -45,7 +46,7 @@ export default function PackageDetails() {
             </Button>
           </EmptyState>
         ) : (
-          <EmptyState icon={CloudOff} tone="danger" title="Couldn't load this package" description={error.message}>
+          <EmptyState titleAs="h1" icon={CloudOff} tone="danger" title="Couldn't load this package" description={error.message}>
             <Button icon={RefreshCw} onClick={reload}>
               Try again
             </Button>

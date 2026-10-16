@@ -65,3 +65,17 @@
   outline-offset: 4px;
   border-radius: var(--radius-md);
 }
+
+/* Keep every tab visible on phones instead of hiding some behind a scroll. */
+@media (max-width: 480px) {
+  .tab {
+    flex: 1 1 auto;
+    gap: 6px;
+    padding: 0 var(--space-2);
+    font-size: var(--fs-sm);
+  }
+
+  .tab > svg {
+    display: none;
+  }
+}

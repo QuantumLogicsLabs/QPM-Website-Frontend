@@ -17,6 +17,24 @@ export default defineConfig({
       localsConvention: "camelCaseOnly",
     },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        // Stable, cache-friendly vendor chunks; each page is split by the router.
+        codeSplitting: {
+          groups: [
+            {
+              name: "react",
+              test: /node_modules[\\/](react|react-dom|react-router|scheduler|cookie|set-cookie-parser)[\\/]/,
+              priority: 20,
+            },
+            { name: "icons", test: /node_modules[\\/]lucide-react[\\/]/, priority: 10 },
+            { name: "markdown", test: /node_modules[\\/](react-markdown|remark-gfm)[\\/]/, priority: 10 },
+          ],
+        },
+      },
+    },
+  },
   server: {
     port: 3000,
     proxy: {

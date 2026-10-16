@@ -7,11 +7,11 @@ import { useToast } from "@/hooks/useToast";
 import { describedBy } from "@/utils/a11y";
 import {
   dependenciesToObject,
-  guessFromFilename,
   parseKeywords,
   validateDependencies,
   validatePackageName,
-  validateTarball,
+  validateFiles,
+  withPackagePaths,
   validateUrl,
   validateVersion,
 } from "@/utils/validation";
@@ -37,7 +37,7 @@ export default function UploadForm({ initialName = "", onPublished }) {
   const id = useId();
   const fieldId = (name) => `${id}-${name}`;
 
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [values, setValues] = useState({
     name: initialName.toLowerCase(),
     version: DEFAULT_VERSION,
@@ -60,7 +60,7 @@ export default function UploadForm({ initialName = "", onPublished }) {
   }, []);
 
   const errors = {
-    file: validateTarball(file),
+    file: validateFiles(files),
     name: validatePackageName(values.name),
     version: validateVersion(values.version),
     repository: validateUrl(values.repository.trim()),
@@ -71,19 +71,25 @@ export default function UploadForm({ initialName = "", onPublished }) {
   const update = (field, transform = (value) => value) => (event) =>
     setValues((current) => ({ ...current, [field]: transform(event.target.value) }));
 
+  const packageFiles = withPackagePaths(files);
   const keywords = parseKeywords(values.keywords);
   const busy = upload.status !== "idle";
 
-  const selectFile = (selected) => {
-    setFile(selected);
+  // Adds picked files/folders; a later pick of the same path replaces the earlier one.
+  const addFiles = (picked, root) => {
+    setFiles((current) => {
+      const byPath = new Map(current.map((item) => [item.path, item]));
+      for (const item of picked) byPath.set(item.path, item);
+      return [...byPath.values()].sort((a, b) => a.path.localeCompare(b.path));
+    });
     setTouched((current) => ({ ...current, file: true }));
-    const guess = guessFromFilename(selected.name);
-    setValues((current) => ({
-      ...current,
-      name: current.name || guess.name,
-      version: guess.version && current.version === DEFAULT_VERSION ? guess.version : current.version,
-    }));
+    if (root) {
+      const guess = root.toLowerCase().replace(/[^a-z0-9._-]+/g, "-").replace(/^[-._]+/, "");
+      setValues((current) => ({ ...current, name: current.name || guess }));
+    }
   };
+
+  const removeFile = (path) => setFiles((current) => current.filter((item) => item.path !== path));
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -111,7 +117,7 @@ export default function UploadForm({ initialName = "", onPublished }) {
           readme: values.readme.trim(),
           dependencies: JSON.stringify(dependenciesToObject(dependencies)),
         },
-        file,
+        packageFiles,
         {
           token,
           signal: controller.signal,
@@ -145,16 +151,18 @@ export default function UploadForm({ initialName = "", onPublished }) {
             Package archive
           </h2>
           <p className={styles.sectionLead}>
-            Your built package as a <code>.tgz</code>. Optional — without one, an empty package
-            container is created.
+            Select the files or a folder that make up your package. We bundle them into a{" "}
+            <code>.tgz</code> when you publish. Optional — without any, an empty package container
+            is created.
           </p>
         </div>
         <Field htmlFor={fieldId("file")} error={errorFor("file")}>
           <FileDropzone
             id={fieldId("file")}
-            file={file}
-            onSelect={selectFile}
-            onClear={() => setFile(null)}
+            items={packageFiles}
+            onAdd={addFiles}
+            onRemove={removeFile}
+            onClear={() => setFiles([])}
             invalid={Boolean(errorFor("file"))}
             disabled={busy}
             aria-describedby={describedBy(fieldId("file"), { error: errorFor("file") })}
@@ -308,7 +316,7 @@ export default function UploadForm({ initialName = "", onPublished }) {
               <span>
                 {upload.status === "processing"
                   ? "Saving to Google Drive…"
-                  : `Uploading ${file ? file.name : "package metadata"}…`}
+                  : `Uploading ${files.length ? `${files.length} file${files.length === 1 ? "" : "s"}` : "package metadata"}…`}
               </span>
               {upload.status === "uploading" && <span>{Math.round(upload.progress * 100)}%</span>}
             </div>

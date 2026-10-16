@@ -26,6 +26,7 @@ export default function Profile() {
       <div className="container page">
         <PageMeta title="Your profile" />
         <EmptyState
+          titleAs="h1"
           icon={UserRound}
           tone="indigo"
           title="Sign in to see your dashboard"

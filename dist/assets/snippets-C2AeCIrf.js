@@ -1,2 +1,0 @@
-import{C as e}from"./format-B9phWwxZ.js";var t=()=>[`curl -X POST ${e(`/registry/publish`)} \\`,`  -H "Authorization: Bearer $QPM_TOKEN" \\`,`  -F "name=my-package" -F "version=1.0.0" \\`,`  -F "file=@my-package-1.0.0.tgz"`].join(`
-`);export{t};

@@ -22,6 +22,7 @@ body {
     radial-gradient(ellipse 50% 45% at 95% 100%, rgba(6, 182, 212, 0.1) 0%, transparent 70%),
     radial-gradient(ellipse 70% 60% at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 70%);
   background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--text);
   font-family: var(--font-body);
   font-size: var(--fs-md);
