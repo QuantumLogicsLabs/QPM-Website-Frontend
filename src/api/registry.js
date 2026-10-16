@@ -77,7 +77,7 @@ export async function getMyPackages(token, username, { signal } = {}) {
 /**
  * Publishes via multipart/form-data (no base64 inflation, supports progress).
  * @param {Record<string, string>} fields
- * @param {{ file: File, path: string }[]} files  Loose files / a folder; the registry packs them into a .tgz.
+ * @param {{ file: File, path: string, packagePath?: string }[]} files  Loose files / a folder; the registry packs them into a .tgz.
  */
 export function publishPackage(fields, files = [], { token, signal, onProgress } = {}) {
   const form = new FormData();
@@ -86,7 +86,7 @@ export function publishPackage(fields, files = [], { token, signal, onProgress }
   }
   if (files.length) {
     // `paths` goes first so the server sees it before the file parts; it maps 1:1 to `files`.
-    form.append("paths", JSON.stringify(files.map((item) => item.path)));
+    form.append("paths", JSON.stringify(files.map((item) => item.packagePath ?? item.path)));
     for (const item of files) form.append("files", item.file, item.file.name);
   }
   return upload("/registry/publish", form, { token, signal, onProgress });

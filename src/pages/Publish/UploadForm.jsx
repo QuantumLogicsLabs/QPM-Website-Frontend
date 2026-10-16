@@ -11,6 +11,7 @@ import {
   validateDependencies,
   validatePackageName,
   validateFiles,
+  withPackagePaths,
   validateUrl,
   validateVersion,
 } from "@/utils/validation";
@@ -70,6 +71,7 @@ export default function UploadForm({ initialName = "", onPublished }) {
   const update = (field, transform = (value) => value) => (event) =>
     setValues((current) => ({ ...current, [field]: transform(event.target.value) }));
 
+  const packageFiles = withPackagePaths(files);
   const keywords = parseKeywords(values.keywords);
   const busy = upload.status !== "idle";
 
@@ -115,7 +117,7 @@ export default function UploadForm({ initialName = "", onPublished }) {
           readme: values.readme.trim(),
           dependencies: JSON.stringify(dependenciesToObject(dependencies)),
         },
-        files,
+        packageFiles,
         {
           token,
           signal: controller.signal,
@@ -157,7 +159,7 @@ export default function UploadForm({ initialName = "", onPublished }) {
         <Field htmlFor={fieldId("file")} error={errorFor("file")}>
           <FileDropzone
             id={fieldId("file")}
-            items={files}
+            items={packageFiles}
             onAdd={addFiles}
             onRemove={removeFile}
             onClear={() => setFiles([])}

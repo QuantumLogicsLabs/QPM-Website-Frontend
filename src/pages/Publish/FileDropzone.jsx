@@ -24,8 +24,8 @@ async function collectEntry(entry, prefix = "") {
 }
 
 /**
- * Picks any number of files and/or a whole folder (click or drag and drop).
- * Reports `{ file, path }` items through onAdd(items, rootFolderName?); the registry
+ * Picks any mix of files and folders (click or drag and drop); each pick adds to the list.
+ * Reports `{ file, path }` items (path includes any folder names) through onAdd(items, rootFolderName?); the registry
  * bundles them into a .tgz on publish. The native inputs stay in the DOM for a11y.
  */
 export default function FileDropzone({
@@ -49,14 +49,15 @@ export default function FileDropzone({
     if (picked.length) onAdd(picked);
   };
 
-  // A folder pick reports webkitRelativePath as "folder/sub/file"; the folder itself is dropped from the path.
+  // A folder pick reports webkitRelativePath as "folder/sub/file". The folder name stays in the
+  // path so several folders can be combined; a lone top-level folder is unwrapped on publish.
   const addFolder = (list) => {
     const all = [...(list ?? [])];
     if (!all.length) return;
     const root = all[0].webkitRelativePath.split("/")[0];
     const picked = all
-      .map((file) => ({ file, path: file.webkitRelativePath.split("/").slice(1).join("/") }))
-      .filter((item) => item.path && !isIgnoredPath(item.path));
+      .map((file) => ({ file, path: file.webkitRelativePath }))
+      .filter((item) => !isIgnoredPath(item.path));
     if (picked.length) onAdd(picked, root);
   };
 
@@ -65,20 +66,15 @@ export default function FileDropzone({
     const entries = [...dataTransfer.items].map((item) => item.webkitGetAsEntry?.()).filter(Boolean);
     if (!entries.length) return addLoose(dataTransfer.files);
 
-    let root;
+    // Files and folders can be dropped together; every folder keeps its name in the path.
     const picked = [];
+    let root;
     for (const entry of entries) {
       if (isIgnoredPath(entry.name)) continue;
-      if (entry.isDirectory && entries.length === 1) {
-        root = entry.name;
-        // Single folder: unwrap it so its contents sit at the package root.
-        const inner = await collectEntry(entry);
-        picked.push(...inner.map((item) => ({ ...item, path: item.path.split("/").slice(1).join("/") })));
-      } else {
-        picked.push(...(await collectEntry(entry)));
-      }
+      if (entry.isDirectory) root ??= entry.name;
+      picked.push(...(await collectEntry(entry)));
     }
-    if (picked.length) onAdd(picked.filter((item) => item.path), root);
+    if (picked.length) onAdd(picked, root);
   };
 
   const dropHandlers = disabled
@@ -143,7 +139,7 @@ export default function FileDropzone({
           <CloudUpload size={26} aria-hidden="true" />
         </span>
         <span className={styles.prompt}>
-          <strong>Select files or a folder</strong> or drag and drop them here
+          <strong>Select files and folders</strong> or drag and drop them here
         </span>
         <div className={styles.pickActions}>
           <Button variant="secondary" size="sm" icon={FilePlus} onClick={() => filesRef.current?.click()} disabled={disabled}>
@@ -153,7 +149,7 @@ export default function FileDropzone({
             Select folder
           </Button>
         </div>
-        <span className={styles.meta}>Up to 100 MB in total · node_modules and .git are skipped</span>
+        <span className={styles.meta}>Add as many files and folders as you like — they combine. Up to 100 MB in total; node_modules and .git are skipped.</span>
       </div>
 
       {items.length > 0 && (
@@ -170,13 +166,13 @@ export default function FileDropzone({
             {items.map((item) => (
               <li key={item.path} className={styles.listItem}>
                 <FileIcon size={15} aria-hidden="true" />
-                <span className={styles.itemPath}>{item.path}</span>
+                <span className={styles.itemPath}>{item.packagePath}</span>
                 <span className={styles.itemSize}>{formatBytes(item.file.size)}</span>
                 <Button
                   variant="ghost"
                   size="sm"
                   icon={X}
-                  aria-label={`Remove ${item.path}`}
+                  aria-label={`Remove ${item.packagePath}`}
                   onClick={() => onRemove(item.path)}
                   disabled={disabled}
                 />
