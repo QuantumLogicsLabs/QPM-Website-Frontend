@@ -1,18 +1,84 @@
 import { useRef, useState } from "react";
-import { CloudUpload, FileArchive, X } from "lucide-react";
+import { CloudUpload, File as FileIcon, FilePlus, FolderUp, X } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { formatBytes } from "@/utils/format";
+import { isIgnoredPath } from "@/utils/validation";
 import Button from "@/components/ui/Button";
 import styles from "./FileDropzone.module.css";
 
-/** Click-or-drop picker for a single tarball. The native input stays in the DOM for a11y. */
-export default function FileDropzone({ id, file, onSelect, onClear, invalid = false, disabled = false, ...inputProps }) {
-  const [dragging, setDragging] = useState(false);
-  const inputRef = useRef(null);
+const readEntries = (reader) => new Promise((resolve, reject) => reader.readEntries(resolve, reject));
+const readFile = (entry) => new Promise((resolve, reject) => entry.file(resolve, reject));
 
-  const pick = (files) => {
-    const selected = files?.[0];
-    if (selected) onSelect(selected);
+// Walks a dropped directory entry; paths are relative to the dropped folder's parent.
+async function collectEntry(entry, prefix = "") {
+  if (entry.isFile) return [{ file: await readFile(entry), path: `${prefix}${entry.name}` }];
+
+  const reader = entry.createReader();
+  const found = [];
+  for (let batch = await readEntries(reader); batch.length; batch = await readEntries(reader)) {
+    for (const child of batch) {
+      if (!isIgnoredPath(child.name)) found.push(...(await collectEntry(child, `${prefix}${entry.name}/`)));
+    }
+  }
+  return found;
+}
+
+/**
+ * Picks any number of files and/or a whole folder (click or drag and drop).
+ * Reports `{ file, path }` items through onAdd(items, rootFolderName?); the registry
+ * bundles them into a .tgz on publish. The native inputs stay in the DOM for a11y.
+ */
+export default function FileDropzone({
+  id,
+  items,
+  onAdd,
+  onRemove,
+  onClear,
+  invalid = false,
+  disabled = false,
+  ...inputProps
+}) {
+  const [dragging, setDragging] = useState(false);
+  const filesRef = useRef(null);
+  const folderRef = useRef(null);
+
+  const addLoose = (list) => {
+    const picked = [...(list ?? [])]
+      .filter((file) => !isIgnoredPath(file.name))
+      .map((file) => ({ file, path: file.name }));
+    if (picked.length) onAdd(picked);
+  };
+
+  // A folder pick reports webkitRelativePath as "folder/sub/file"; the folder itself is dropped from the path.
+  const addFolder = (list) => {
+    const all = [...(list ?? [])];
+    if (!all.length) return;
+    const root = all[0].webkitRelativePath.split("/")[0];
+    const picked = all
+      .map((file) => ({ file, path: file.webkitRelativePath.split("/").slice(1).join("/") }))
+      .filter((item) => item.path && !isIgnoredPath(item.path));
+    if (picked.length) onAdd(picked, root);
+  };
+
+  const addDropped = async (dataTransfer) => {
+    // Entries must be grabbed synchronously, before the first await.
+    const entries = [...dataTransfer.items].map((item) => item.webkitGetAsEntry?.()).filter(Boolean);
+    if (!entries.length) return addLoose(dataTransfer.files);
+
+    let root;
+    const picked = [];
+    for (const entry of entries) {
+      if (isIgnoredPath(entry.name)) continue;
+      if (entry.isDirectory && entries.length === 1) {
+        root = entry.name;
+        // Single folder: unwrap it so its contents sit at the package root.
+        const inner = await collectEntry(entry);
+        picked.push(...inner.map((item) => ({ ...item, path: item.path.split("/").slice(1).join("/") })));
+      } else {
+        picked.push(...(await collectEntry(entry)));
+      }
+    }
+    if (picked.length) onAdd(picked.filter((item) => item.path), root);
   };
 
   const dropHandlers = disabled
@@ -32,71 +98,93 @@ export default function FileDropzone({ id, file, onSelect, onClear, invalid = fa
         onDrop: (event) => {
           event.preventDefault();
           setDragging(false);
-          pick(event.dataTransfer.files);
+          addDropped(event.dataTransfer);
         },
       };
 
-  const input = (
-    <input
-      ref={inputRef}
-      id={id}
-      type="file"
-      accept=".tgz,.gz,application/gzip,application/x-gzip"
-      className="visually-hidden"
-      disabled={disabled}
-      onChange={(event) => {
-        pick(event.target.files);
-        event.target.value = "";
-      }}
-      {...inputProps}
-    />
-  );
-
-  if (file) {
-    return (
-      <div className={cn(styles.fileCard, invalid && styles.invalid, dragging && styles.dragging)} {...dropHandlers}>
-        {input}
-        <span className={styles.fileIcon}>
-          <FileArchive size={22} aria-hidden="true" />
-        </span>
-        <div className={styles.fileInfo}>
-          <p className={styles.fileName}>{file.name}</p>
-          <p className={styles.fileMeta}>
-            {formatBytes(file.size)}
-            {!invalid && " · ready to upload"}
-          </p>
-        </div>
-        <div className={styles.fileActions}>
-          <Button variant="ghost" size="sm" onClick={() => inputRef.current?.click()} disabled={disabled}>
-            Replace
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            icon={X}
-            aria-label={`Remove ${file.name}`}
-            onClick={onClear}
-            disabled={disabled}
-          />
-        </div>
-      </div>
-    );
-  }
+  const totalBytes = items.reduce((sum, item) => sum + item.file.size, 0);
 
   return (
-    <label
-      htmlFor={id}
-      className={cn(styles.dropzone, dragging && styles.dragging, invalid && styles.invalid, disabled && styles.disabled)}
-      {...dropHandlers}
-    >
-      {input}
-      <span className={styles.icon}>
-        <CloudUpload size={26} aria-hidden="true" />
-      </span>
-      <span className={styles.prompt}>
-        <strong>Choose a .tgz archive</strong> or drag and drop it here
-      </span>
-      <span className={styles.meta}>.tgz or .tar.gz · up to 100 MB</span>
-    </label>
+    <div className={styles.picker}>
+      <input
+        ref={filesRef}
+        id={id}
+        type="file"
+        multiple
+        className="visually-hidden"
+        disabled={disabled}
+        onChange={(event) => {
+          addLoose(event.target.files);
+          event.target.value = "";
+        }}
+        {...inputProps}
+      />
+      <input
+        ref={folderRef}
+        type="file"
+        webkitdirectory=""
+        directory=""
+        multiple
+        className="visually-hidden"
+        tabIndex={-1}
+        aria-hidden="true"
+        disabled={disabled}
+        onChange={(event) => {
+          addFolder(event.target.files);
+          event.target.value = "";
+        }}
+      />
+
+      <div
+        className={cn(styles.dropzone, dragging && styles.dragging, invalid && styles.invalid, disabled && styles.disabled)}
+        {...dropHandlers}
+      >
+        <span className={styles.icon}>
+          <CloudUpload size={26} aria-hidden="true" />
+        </span>
+        <span className={styles.prompt}>
+          <strong>Select files or a folder</strong> or drag and drop them here
+        </span>
+        <div className={styles.pickActions}>
+          <Button variant="secondary" size="sm" icon={FilePlus} onClick={() => filesRef.current?.click()} disabled={disabled}>
+            Select files
+          </Button>
+          <Button variant="secondary" size="sm" icon={FolderUp} onClick={() => folderRef.current?.click()} disabled={disabled}>
+            Select folder
+          </Button>
+        </div>
+        <span className={styles.meta}>Up to 100 MB in total · node_modules and .git are skipped</span>
+      </div>
+
+      {items.length > 0 && (
+        <div className={cn(styles.fileList, invalid && styles.invalid)}>
+          <div className={styles.listHeader}>
+            <span>
+              {items.length} file{items.length === 1 ? "" : "s"} · {formatBytes(totalBytes)} · will be bundled into a .tgz
+            </span>
+            <Button variant="ghost" size="sm" onClick={onClear} disabled={disabled}>
+              Clear all
+            </Button>
+          </div>
+          <ul className={styles.list}>
+            {items.map((item) => (
+              <li key={item.path} className={styles.listItem}>
+                <FileIcon size={15} aria-hidden="true" />
+                <span className={styles.itemPath}>{item.path}</span>
+                <span className={styles.itemSize}>{formatBytes(item.file.size)}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={X}
+                  aria-label={`Remove ${item.path}`}
+                  onClick={() => onRemove(item.path)}
+                  disabled={disabled}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }

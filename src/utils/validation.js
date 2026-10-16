@@ -44,10 +44,15 @@ export function validateGithubRepo(url) {
   return parseGithubRepo(url) ? null : "Use a GitHub repository URL, e.g. https://github.com/owner/repo";
 }
 
-export function validateTarball(file) {
-  if (!file) return null;
-  if (!TARBALL_RE.test(file.name)) return "Choose a .tgz or .tar.gz archive.";
-  if (file.size > MAX_TARBALL_BYTES) return "Archives must be 100 MB or smaller.";
+const IGNORED_SEGMENTS = new Set([".git", "node_modules", ".DS_Store"]);
+
+/** Paths the registry never packs (mirrors the backend), so they aren't even offered. */
+export const isIgnoredPath = (path) => path.split("/").some((segment) => IGNORED_SEGMENTS.has(segment));
+
+/** items: [{ file, path }] picked in <FileDropzone>. */
+export function validateFiles(items) {
+  const total = items.reduce((sum, item) => sum + item.file.size, 0);
+  if (total > MAX_TARBALL_BYTES) return "Selected files must be 100 MB or smaller in total.";
   return null;
 }
 
