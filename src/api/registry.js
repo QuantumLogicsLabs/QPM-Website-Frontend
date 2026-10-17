@@ -69,6 +69,19 @@ export async function getPackage(name, { signal } = {}) {
   };
 }
 
+const versionPath = (name, version) =>
+  `/registry/${encodeURIComponent(name)}/v/${encodeURIComponent(version)}`;
+
+/** Every file in a version's tarball: `{ path, size }[]`, sorted by path. */
+export async function getPackageFiles(name, version, { signal } = {}) {
+  const data = await request(`${versionPath(name, version)}/files`, { signal });
+  return data?.files ?? [];
+}
+
+/** One file's contents; `content` is null when the file is binary or too large to show. */
+export const getPackageFile = (name, version, path, { signal } = {}) =>
+  request(`${versionPath(name, version)}/file?path=${encodeURIComponent(path)}`, { signal });
+
 export async function getMyPackages(token, username, { signal } = {}) {
   const data = await request("/registry/user/my-packages", { token, signal });
   return (data?.packages ?? []).map((pkg) => toSummary(pkg, username));

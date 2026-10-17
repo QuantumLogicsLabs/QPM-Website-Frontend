@@ -1,5 +1,5 @@
 import { Link, useParams, useSearchParams } from "react-router";
-import { ChevronRight, Clock, CloudOff, Download, FileText, History, Layers, PackageX, RefreshCw, Scale, Upload, User } from "lucide-react";
+import { ChevronRight, Clock, CloudOff, Code, Download, FileText, History, Layers, PackageX, RefreshCw, Scale, Upload, User } from "lucide-react";
 import { getPackage } from "@/api/registry";
 import { useResource } from "@/hooks/useResource";
 import { cn } from "@/utils/cn";
@@ -11,12 +11,13 @@ import EmptyState from "@/components/ui/EmptyState";
 import PageMeta from "@/components/ui/PageMeta";
 import Skeleton from "@/components/ui/Skeleton";
 import Tabs, { TabPanel } from "@/components/ui/Tabs";
+import CodePanel from "./CodePanel";
 import DependenciesPanel from "./DependenciesPanel";
 import PackageSidebar from "./PackageSidebar";
 import VersionsPanel from "./VersionsPanel";
 import styles from "./PackageDetails.module.css";
 
-const TAB_IDS = ["readme", "versions", "dependencies"];
+const TAB_IDS = ["readme", "code", "versions", "dependencies"];
 
 export default function PackageDetails() {
   const { name } = useParams();
@@ -59,12 +60,28 @@ export default function PackageDetails() {
   const dependencyCount = Object.keys(pkg.latestVersion?.dependencies ?? {}).length;
   const tabs = [
     { id: "readme", label: "Readme", icon: FileText },
+    { id: "code", label: "Code", icon: Code },
     { id: "versions", label: "Versions", icon: History, count: pkg.versions.length },
     { id: "dependencies", label: "Dependencies", icon: Layers, count: dependencyCount },
   ];
 
   const selectTab = (id) =>
     setParams(id === "readme" ? {} : { tab: id }, { replace: true, preventScrollReset: true });
+
+  // The Code tab keeps its version and open file in the URL so links to a file can be shared.
+  const codeVersion = pkg.versions.some((v) => v.version === params.get("version")) ? params.get("version") : pkg.latest;
+  const updateCodeParams = (changes) =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        for (const [key, value] of Object.entries(changes)) {
+          if (value) next.set(key, value);
+          else next.delete(key);
+        }
+        return next;
+      },
+      { replace: true, preventScrollReset: true },
+    );
 
   return (
     <div className="container page">
@@ -134,6 +151,18 @@ export default function PackageDetails() {
                 <Markdown>{pkg.readme}</Markdown>
               ) : (
                 <p className={styles.placeholder}>This package doesn't have a README yet.</p>
+              ))}
+            {tab === "code" &&
+              (codeVersion ? (
+                <CodePanel
+                  pkg={pkg}
+                  version={codeVersion}
+                  file={params.get("file")}
+                  onSelectVersion={(version) => updateCodeParams({ version, file: null })}
+                  onSelectFile={(file) => updateCodeParams({ file })}
+                />
+              ) : (
+                <p className={styles.placeholder}>No versions have been published yet.</p>
               ))}
             {tab === "versions" && <VersionsPanel pkg={pkg} />}
             {tab === "dependencies" && <DependenciesPanel dependencies={pkg.latestVersion?.dependencies ?? {}} />}
