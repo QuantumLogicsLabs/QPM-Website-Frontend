@@ -133,6 +133,17 @@
   margin-left: auto;
 }
 
+.delete {
+  position: relative;
+  z-index: 1;
+  margin-left: calc(var(--space-4) * -1 + var(--space-1));
+}
+
+.delete:hover:not(:disabled) {
+  background: var(--danger-soft);
+  color: var(--text-danger);
+}
+
 .skeletonGap {
   margin-top: 8px;
 }

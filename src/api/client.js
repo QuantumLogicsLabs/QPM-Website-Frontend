@@ -38,13 +38,13 @@ const networkError = () =>
 /**
  * JSON request helper.
  * @param {string} path  Path relative to the API base, e.g. "/registry/search".
- * @param {{ method?: string, body?: unknown, token?: string | null, signal?: AbortSignal }} [options]
+ * @param {{ method?: string, body?: unknown, token?: string | null, signal?: AbortSignal, cache?: RequestCache }} [options]
  */
-export async function request(path, { method = "GET", body, token, signal } = {}) {
+export async function request(path, { method = "GET", body, token, signal, cache } = {}) {
   const headers = { Accept: "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const init = { method, headers, signal };
+  const init = { method, headers, signal, cache };
   if (body !== undefined) {
     headers["Content-Type"] = "application/json";
     init.body = JSON.stringify(body);

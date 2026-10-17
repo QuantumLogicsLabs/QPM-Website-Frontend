@@ -1,15 +1,17 @@
 import { Link } from "react-router";
-import { Clock, Download } from "lucide-react";
+import { Clock, Download, Trash2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { formatCompact, formatDate, formatNumber, timeAgo } from "@/utils/format";
 import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
 import CopyButton from "@/components/ui/CopyButton";
 import Skeleton from "@/components/ui/Skeleton";
 import styles from "./PackageCard.module.css";
 
 const MAX_KEYWORDS = 3;
 
-export default function PackageCard({ pkg }) {
+/** Pass `onDelete` to show a delete button (used on the owner's profile). */
+export default function PackageCard({ pkg, onDelete }) {
   const { name, description, version, keywords, downloads, owner, updatedAt } = pkg;
   const updated = timeAgo(updatedAt);
   const extraKeywords = keywords.length - MAX_KEYWORDS;
@@ -67,6 +69,17 @@ export default function PackageCard({ pkg }) {
           </span>
         )}
         <CopyButton value={`qpm install ${name}`} label={`Copy install command for ${name}`} className={styles.copy} />
+        {onDelete && (
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={Trash2}
+            aria-label={`Delete ${name}`}
+            title={`Delete ${name}`}
+            className={styles.delete}
+            onClick={() => onDelete(pkg)}
+          />
+        )}
       </footer>
     </article>
   );
