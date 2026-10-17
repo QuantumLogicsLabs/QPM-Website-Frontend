@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Boxes, Calendar, Clock, Download, LogOut, Mail, PackagePlus, RefreshCw, Upload, UserRound } from "lucide-react";
 import { getMyPackages } from "@/api/registry";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,6 +13,7 @@ import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import PageMeta from "@/components/ui/PageMeta";
 import Skeleton from "@/components/ui/Skeleton";
+import DeletePackageModal from "./DeletePackageModal";
 import TokenCard from "./TokenCard";
 import styles from "./Profile.module.css";
 
@@ -51,6 +52,8 @@ function Dashboard({ user, token }) {
     (signal) => getMyPackages(token, user.username, { signal }),
     [token, user.username],
   );
+
+  const [toDelete, setToDelete] = useState(null);
 
   const packages = useMemo(() => data ?? [], [data]);
   const lastPublished = useMemo(
@@ -166,9 +169,21 @@ function Dashboard({ user, token }) {
             </Button>
           </EmptyState>
         ) : (
-          <PackageGrid packages={packages} />
+          <PackageGrid packages={packages} onDelete={setToDelete} />
         )}
       </section>
+
+      {toDelete && (
+        <DeletePackageModal
+          pkg={toDelete}
+          token={token}
+          onClose={() => setToDelete(null)}
+          onDeleted={() => {
+            setToDelete(null);
+            reload();
+          }}
+        />
+      )}
     </div>
   );
 }

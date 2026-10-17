@@ -74,18 +74,38 @@ const versionPath = (name, version) =>
 
 /** Every file in a version's tarball: `{ path, size }[]`, sorted by path. */
 export async function getPackageFiles(name, version, { signal } = {}) {
-  const data = await request(`${versionPath(name, version)}/files`, { signal });
+  // "no-store": a version can be deleted and republished under the same number, so a
+  // response the browser kept (e.g. an old "files weren't saved" error) must never be reused.
+  const data = await request(`${versionPath(name, version)}/files`, { signal, cache: "no-store" });
   return data?.files ?? [];
 }
 
 /** One file's contents; `content` is null when the file is binary or too large to show. */
 export const getPackageFile = (name, version, path, { signal } = {}) =>
-  request(`${versionPath(name, version)}/file?path=${encodeURIComponent(path)}`, { signal });
+  request(`${versionPath(name, version)}/file?path=${encodeURIComponent(path)}`, { signal, cache: "no-store" });
 
 export async function getMyPackages(token, username, { signal } = {}) {
   const data = await request("/registry/user/my-packages", { token, signal });
   return (data?.packages ?? []).map((pkg) => toSummary(pkg, username));
 }
+
+/** Raw bytes of one file (used for image previews and the "Raw" link). */
+export const rawFileUrl = (name, version, path) =>
+  `${API_BASE}${versionPath(name, version)}/raw?path=${encodeURIComponent(path)}`;
+
+/** `{ weekly: number[52] (oldest first), lastWeek: number, versions: { [version]: downloadsLast7Days } }` */
+export const getPackageStats = (name, { signal } = {}) =>
+  request(`/registry/${encodeURIComponent(name)}/stats`, { signal, cache: "no-store" });
+
+/** Packages whose latest version depends on `name`: `{ name, version, description, range }[]` */
+export async function getPackageDependents(name, { signal } = {}) {
+  const data = await request(`/registry/${encodeURIComponent(name)}/dependents`, { signal, cache: "no-store" });
+  return data?.dependents ?? [];
+}
+
+/** Deletes a package and all of its versions. Only its owner may do this. */
+export const deletePackage = (name, { token, signal } = {}) =>
+  request(`/registry/${encodeURIComponent(name)}`, { method: "DELETE", token, signal });
 
 /**
  * Publishes via multipart/form-data (no base64 inflation, supports progress).

@@ -6,7 +6,14 @@ import styles from "./PackageGrid.module.css";
  * Responsive grid of package cards.
  * `loading` renders skeletons; `busy` dims existing results during a refetch.
  */
-export default function PackageGrid({ packages = [], loading = false, busy = false, skeletonCount = 6, className }) {
+export default function PackageGrid({
+  packages = [],
+  loading = false,
+  busy = false,
+  skeletonCount = 6,
+  onDelete,
+  className,
+}) {
   if (loading) {
     return (
       <div className={cn(styles.grid, className)} aria-busy="true">
@@ -24,7 +31,7 @@ export default function PackageGrid({ packages = [], loading = false, busy = fal
     <ul role="list" className={cn(styles.grid, busy && styles.busy, className)} aria-busy={busy || undefined}>
       {packages.map((pkg) => (
         <li key={pkg.name} className={styles.item}>
-          <PackageCard pkg={pkg} />
+          <PackageCard pkg={pkg} onDelete={onDelete} />
         </li>
       ))}
     </ul>

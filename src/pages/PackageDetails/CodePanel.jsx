@@ -1,51 +1,90 @@
-import { useMemo, useState } from "react";
-import { ChevronRight, CloudOff, File, FileCode, FileText, Folder, FolderOpen, RefreshCw } from "lucide-react";
-import { getPackageFile, getPackageFiles } from "@/api/registry";
+import { useMemo } from "react";
+import { CloudOff, CornerLeftUp, ExternalLink, File, FileCode, FileImage, FileText, Folder, RefreshCw } from "lucide-react";
+import { getPackageFile, getPackageFiles, rawFileUrl } from "@/api/registry";
 import { useResource } from "@/hooks/useResource";
-import { cn } from "@/utils/cn";
 import { formatBytes, pluralize } from "@/utils/format";
 import Button from "@/components/ui/Button";
 import CopyButton from "@/components/ui/CopyButton";
 import Skeleton from "@/components/ui/Skeleton";
 import styles from "./CodePanel.module.css";
 
-const CODE_EXTENSIONS = /\.(qc|q|js|jsx|ts|tsx|json|py|c|h|cpp|hpp|rs|go|java|sh|css|html|yml|yaml|toml)$/i;
+// Friendly content types by extension, shown in the listing like a registry would.
+const TYPES = {
+  sa: "text/x-quantum",
+  qc: "text/x-quantum",
+  q: "text/x-quantum",
+  js: "application/javascript",
+  mjs: "application/javascript",
+  cjs: "application/javascript",
+  jsx: "text/jsx",
+  ts: "application/typescript",
+  tsx: "text/tsx",
+  json: "application/json",
+  md: "text/markdown",
+  txt: "text/plain",
+  html: "text/html",
+  css: "text/css",
+  py: "text/x-python",
+  c: "text/x-c",
+  h: "text/x-c",
+  cpp: "text/x-c++",
+  hpp: "text/x-c++",
+  rs: "text/x-rust",
+  go: "text/x-go",
+  java: "text/x-java",
+  sh: "application/x-sh",
+  ps1: "text/plain",
+  yml: "text/yaml",
+  yaml: "text/yaml",
+  toml: "text/x-toml",
+  xml: "application/xml",
+  svg: "image/svg+xml",
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+  ico: "image/x-icon",
+  pdf: "application/pdf",
+};
 
-const fileIcon = (path) => (CODE_EXTENSIONS.test(path) ? FileCode : /\.(md|txt)$/i.test(path) ? FileText : File);
+const extension = (path) => (path.includes(".") ? path.split(".").pop().toLowerCase() : "");
+const fileType = (path) => TYPES[extension(path)] ?? "text/plain";
+const isImage = (path) => fileType(path).startsWith("image/");
 
-/** Turns flat paths into a nested tree; folders sort before files. */
-function buildTree(files) {
-  const root = { children: new Map() };
+function fileIcon(path) {
+  const type = fileType(path);
+  if (type.startsWith("image/")) return FileImage;
+  if (type === "text/markdown" || type === "text/plain") return FileText;
+  return TYPES[extension(path)] ? FileCode : File;
+}
+
+/** Folders and files directly inside `dir` ("" = root); folder sizes are the sum of their contents. */
+function listDirectory(files, dir) {
+  const prefix = dir ? `${dir}/` : "";
+  const folders = new Map();
+  const entries = [];
+
   for (const file of files) {
-    const segments = file.path.split("/");
-    let node = root;
-    segments.forEach((segment, index) => {
-      const isFile = index === segments.length - 1;
-      if (!node.children.has(segment)) {
-        node.children.set(segment, {
-          name: segment,
-          path: segments.slice(0, index + 1).join("/"),
-          ...(isFile ? { size: file.size } : { children: new Map() }),
-        });
-      }
-      node = node.children.get(segment);
-    });
+    if (!file.path.startsWith(prefix)) continue;
+    const rest = file.path.slice(prefix.length);
+    const slash = rest.indexOf("/");
+    if (slash === -1) {
+      entries.push({ kind: "file", name: rest, path: file.path, size: file.size });
+    } else {
+      const name = rest.slice(0, slash);
+      const folder = folders.get(name) ?? { kind: "folder", name, path: prefix + name, size: 0, count: 0 };
+      folder.size += file.size;
+      folder.count += 1;
+      folders.set(name, folder);
+    }
   }
-  return root;
+
+  const byName = (a, b) => a.name.localeCompare(b.name);
+  return [...[...folders.values()].sort(byName), ...entries.sort(byName)];
 }
 
-const sortedChildren = (node) =>
-  [...node.children.values()].sort((a, b) => {
-    if (!!a.children !== !!b.children) return a.children ? -1 : 1;
-    return a.name.localeCompare(b.name);
-  });
-
-/** README at the root if there is one, else the first file. */
-function defaultFile(files) {
-  return files.find(({ path }) => /^readme(\.md)?$/i.test(path))?.path ?? files[0]?.path ?? null;
-}
-
-export default function CodePanel({ pkg, version, file, onSelectVersion, onSelectFile }) {
+export default function CodePanel({ pkg, version, path = "", onSelectVersion, onNavigate }) {
   const { data: files, error, loading, reload } = useResource(
     (signal) => getPackageFiles(pkg.name, version, { signal }),
     [pkg.name, version],
@@ -63,9 +102,24 @@ export default function CodePanel({ pkg, version, file, onSelectVersion, onSelec
     );
   }
 
+  if (loading || !files) {
+    return (
+      <div className={styles.frame} aria-busy="true">
+        <div className={styles.frameHeader}>
+          <Skeleton width={140} height={16} />
+        </div>
+        {[40, 30, 55, 35, 45, 25].map((width, index) => (
+          <div key={index} className={styles.skeletonRow}>
+            <Skeleton width={`${width}%`} height={14} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   const versionPicker = pkg.versions.length > 1 && (
     <label className={styles.versionPicker}>
-      <span>Version</span>
+      <span className="visually-hidden">Version</span>
       <select value={version} onChange={(event) => onSelectVersion(event.target.value)}>
         {pkg.versions.map(({ version: v }) => (
           <option key={v} value={v}>
@@ -77,124 +131,142 @@ export default function CodePanel({ pkg, version, file, onSelectVersion, onSelec
     </label>
   );
 
-  if (loading || !files) {
-    return (
-      <div className={styles.layout} aria-busy="true">
-        <div className={styles.tree}>
-          {[70, 55, 80, 60, 45].map((width, index) => (
-            <Skeleton key={index} width={`${width}%`} height={14} className={styles.skeletonGap} />
-          ))}
-        </div>
-        <Skeleton width="100%" height={320} radius="12px" />
-      </div>
-    );
-  }
-
   if (files.length === 0) {
-    return (
-      <>
-        {versionPicker && <div className={styles.toolbar}>{versionPicker}</div>}
-        <p className={styles.empty}>This version's archive doesn't contain any files.</p>
-      </>
-    );
+    return <p className={styles.message}>This version's archive doesn't contain any files.</p>;
   }
 
-  const selected = files.some(({ path }) => path === file) ? file : defaultFile(files);
+  const file = files.find((item) => item.path === path);
+  const dir = file ? path.split("/").slice(0, -1).join("/") : path;
+  const entries = file ? [] : listDirectory(files, dir);
+
+  // An unknown path (e.g. from an old link) falls back to the root listing.
+  if (!file && dir && entries.length === 0) {
+    return <CodePanel pkg={pkg} version={version} path="" onSelectVersion={onSelectVersion} onNavigate={onNavigate} />;
+  }
 
   return (
-    <>
-      <div className={styles.toolbar}>
-        <h2 className={styles.heading}>{pluralize(files.length, "file")}</h2>
+    <div className={styles.frame}>
+      <header className={styles.frameHeader}>
+        <Breadcrumb name={pkg.name} path={path} isFile={!!file} onNavigate={onNavigate} />
         {versionPicker}
-      </div>
-      <div className={styles.layout}>
-        <FileTree files={files} selected={selected} onSelect={onSelectFile} />
-        <FileViewer key={`${version}:${selected}`} name={pkg.name} version={version} path={selected} />
-      </div>
-    </>
+      </header>
+
+      {file ? (
+        <FileViewer name={pkg.name} version={version} file={file} key={`${version}:${file.path}`} />
+      ) : (
+        <table className={styles.table}>
+          <caption className="visually-hidden">
+            Files in /{pkg.name}/{dir}
+          </caption>
+          <thead className="visually-hidden">
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Type</th>
+              <th scope="col">Size</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dir && (
+              <tr>
+                <td colSpan={3}>
+                  <button
+                    type="button"
+                    className={styles.entry}
+                    onClick={() => onNavigate(dir.split("/").slice(0, -1).join("/"))}
+                  >
+                    <CornerLeftUp size={16} aria-hidden="true" />
+                    <span>..</span>
+                  </button>
+                </td>
+              </tr>
+            )}
+            {entries.map((entry) => {
+              const Icon = entry.kind === "folder" ? Folder : fileIcon(entry.path);
+              return (
+                <tr key={entry.path}>
+                  <td>
+                    <button
+                      type="button"
+                      className={entry.kind === "folder" ? styles.folderEntry : styles.entry}
+                      onClick={() => onNavigate(entry.path)}
+                    >
+                      <Icon size={16} aria-hidden="true" />
+                      <span className={styles.entryName}>
+                        {entry.name}
+                        {entry.kind === "folder" ? "/" : ""}
+                      </span>
+                    </button>
+                  </td>
+                  <td className={styles.type}>
+                    {entry.kind === "folder" ? <strong>folder</strong> : fileType(entry.path)}
+                  </td>
+                  <td className={styles.size}>
+                    {entry.kind === "folder" ? <strong>{formatBytes(entry.size)}</strong> : formatBytes(entry.size)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </div>
   );
 }
 
-function FileTree({ files, selected, onSelect }) {
-  const tree = useMemo(() => buildTree(files), [files]);
-  // Folders start collapsed, except the ones leading to the selected file.
-  const [open, setOpen] = useState(() => {
-    const segments = selected?.split("/") ?? [];
-    return new Set(segments.slice(0, -1).map((_, index) => segments.slice(0, index + 1).join("/")));
-  });
-
-  const toggle = (path) =>
-    setOpen((prev) => {
-      const next = new Set(prev);
-      if (next.has(path)) next.delete(path);
-      else next.add(path);
-      return next;
-    });
-
-  const renderNode = (node, depth) => {
-    const indent = { paddingLeft: `calc(${depth} * 14px + var(--space-2))` };
-
-    if (node.children) {
-      const expanded = open.has(node.path);
-      return (
-        <li key={node.path}>
-          <button
-            type="button"
-            className={styles.entry}
-            style={indent}
-            aria-expanded={expanded}
-            onClick={() => toggle(node.path)}
-          >
-            <ChevronRight size={14} aria-hidden="true" className={cn(styles.chevron, expanded && styles.chevronOpen)} />
-            {expanded ? <FolderOpen size={15} aria-hidden="true" /> : <Folder size={15} aria-hidden="true" />}
-            <span className={styles.entryName}>{node.name}</span>
-          </button>
-          {expanded && <ul role="list">{sortedChildren(node).map((child) => renderNode(child, depth + 1))}</ul>}
-        </li>
-      );
-    }
-
-    const Icon = fileIcon(node.path);
-    const current = node.path === selected;
-    return (
-      <li key={node.path}>
-        <button
-          type="button"
-          className={cn(styles.entry, current && styles.entryActive)}
-          style={indent}
-          aria-current={current ? "true" : undefined}
-          onClick={() => onSelect(node.path)}
-        >
-          <span className={styles.chevronSpacer} />
-          <Icon size={15} aria-hidden="true" />
-          <span className={styles.entryName}>{node.name}</span>
-        </button>
-      </li>
-    );
-  };
-
+function Breadcrumb({ name, path, isFile, onNavigate }) {
+  const segments = path ? path.split("/") : [];
   return (
-    <nav aria-label="Package files" className={styles.tree}>
-      <ul role="list">{sortedChildren(tree).map((node) => renderNode(node, 0))}</ul>
+    <nav aria-label="File path" className={styles.breadcrumb}>
+      <span aria-hidden="true">/</span>
+      <button type="button" className={styles.crumb} onClick={() => onNavigate("")}>
+        {name}
+      </button>
+      {segments.map((segment, index) => {
+        const last = index === segments.length - 1;
+        const target = segments.slice(0, index + 1).join("/");
+        return (
+          <span key={target} className={styles.crumbGroup}>
+            <span aria-hidden="true">/</span>
+            {last && isFile ? (
+              <span className={styles.crumbCurrent} aria-current="page">
+                {segment}
+              </span>
+            ) : (
+              <button type="button" className={styles.crumb} onClick={() => onNavigate(target)}>
+                {segment}
+              </button>
+            )}
+          </span>
+        );
+      })}
+      {!isFile && <span aria-hidden="true">/</span>}
     </nav>
   );
 }
 
-function FileViewer({ name, version, path }) {
-  const { data: file, error, loading, reload } = useResource(
-    (signal) => getPackageFile(name, version, path, { signal }),
-    [name, version, path],
+function FileViewer({ name, version, file }) {
+  const image = isImage(file.path);
+  const raw = rawFileUrl(name, version, file.path);
+  const { data, error, loading, reload } = useResource(
+    (signal) => (image ? Promise.resolve(null) : getPackageFile(name, version, file.path, { signal })),
+    [name, version, file.path, image],
   );
 
   const lines = useMemo(() => {
-    if (!file?.content) return [];
-    const split = file.content.split("\n");
+    if (!data?.content) return [];
+    const split = data.content.replace(/\r\n?/g, "\n").split("\n");
     if (split.length > 1 && split.at(-1) === "") split.pop();
     return split;
-  }, [file]);
+  }, [data]);
 
   let body;
-  if (error) {
+  if (image) {
+    body = (
+      <div className={styles.imagePreview}>
+        <img src={raw} alt={file.path} />
+      </div>
+    );
+  } else if (error) {
     body = (
       <div className={styles.message}>
         <p>{error.message}</p>
@@ -203,7 +275,7 @@ function FileViewer({ name, version, path }) {
         </Button>
       </div>
     );
-  } else if (loading || !file) {
+  } else if (loading || !data) {
     body = (
       <div className={styles.viewerLoading}>
         {[60, 80, 45, 70, 30, 55].map((width, index) => (
@@ -211,11 +283,11 @@ function FileViewer({ name, version, path }) {
         ))}
       </div>
     );
-  } else if (file.binary) {
-    body = <p className={styles.message}>Binary file — download the .tgz to view it.</p>;
-  } else if (file.tooLarge) {
-    body = <p className={styles.message}>This file is too large to display here.</p>;
-  } else if (!file.content) {
+  } else if (data.binary) {
+    body = <p className={styles.message}>Binary file — use “Raw” to download it.</p>;
+  } else if (data.tooLarge) {
+    body = <p className={styles.message}>This file is too large to display here — use “Raw” to view it.</p>;
+  } else if (!data.content) {
     body = <p className={styles.message}>This file is empty.</p>;
   } else {
     body = (
@@ -235,20 +307,18 @@ function FileViewer({ name, version, path }) {
   }
 
   return (
-    <section className={styles.viewer} aria-label={path}>
-      <header className={styles.viewerHeader}>
-        <span className={styles.viewerPath} title={path}>
-          {path}
+    <>
+      <div className={styles.fileBar}>
+        <span className={styles.fileMeta}>
+          {data?.content ? `${pluralize(lines.length, "line")} · ` : ""}
+          {formatBytes(file.size)} · {fileType(file.path)}
         </span>
-        {file && !loading && (
-          <span className={styles.viewerMeta}>
-            {file.content ? `${pluralize(lines.length, "line")} · ` : ""}
-            {formatBytes(file.size)}
-          </span>
-        )}
-        {file?.content && !loading && <CopyButton value={file.content} label="Copy file contents" />}
-      </header>
+        <Button href={raw} target="_blank" rel="noopener noreferrer" variant="ghost" size="sm" icon={ExternalLink}>
+          Raw
+        </Button>
+        {data?.content && <CopyButton value={data.content} label="Copy file contents" />}
+      </div>
       {body}
-    </section>
+    </>
   );
 }

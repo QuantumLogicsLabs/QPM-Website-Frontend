@@ -1,6 +1,6 @@
 import { Link, useParams, useSearchParams } from "react-router";
-import { ChevronRight, Clock, CloudOff, Code, Download, FileText, History, Layers, PackageX, RefreshCw, Scale, Upload, User } from "lucide-react";
-import { getPackage } from "@/api/registry";
+import { Boxes, ChevronRight, Clock, CloudOff, Code, Download, FileText, History, Layers, PackageX, RefreshCw, Scale, Upload, User } from "lucide-react";
+import { getPackage, getPackageDependents, getPackageStats } from "@/api/registry";
 import { useResource } from "@/hooks/useResource";
 import { cn } from "@/utils/cn";
 import { formatDate, formatNumber, timeAgo } from "@/utils/format";
@@ -13,17 +13,21 @@ import Skeleton from "@/components/ui/Skeleton";
 import Tabs, { TabPanel } from "@/components/ui/Tabs";
 import CodePanel from "./CodePanel";
 import DependenciesPanel from "./DependenciesPanel";
+import DependentsPanel from "./DependentsPanel";
 import PackageSidebar from "./PackageSidebar";
 import VersionsPanel from "./VersionsPanel";
 import styles from "./PackageDetails.module.css";
 
-const TAB_IDS = ["readme", "code", "versions", "dependencies"];
+const TAB_IDS = ["readme", "code", "dependencies", "dependents", "versions"];
 
 export default function PackageDetails() {
   const { name } = useParams();
   const [params, setParams] = useSearchParams();
   const tab = TAB_IDS.includes(params.get("tab")) ? params.get("tab") : "readme";
   const { data: pkg, error, loading, reload } = useResource((signal) => getPackage(name, { signal }), [name]);
+  // Secondary data loads alongside the package; failures only affect their own section.
+  const { data: stats } = useResource((signal) => getPackageStats(name, { signal }).catch(() => null), [name]);
+  const dependents = useResource((signal) => getPackageDependents(name, { signal }), [name]);
 
   if (loading) return <PackageDetailsSkeleton />;
 
@@ -61,14 +65,15 @@ export default function PackageDetails() {
   const tabs = [
     { id: "readme", label: "Readme", icon: FileText },
     { id: "code", label: "Code", icon: Code },
-    { id: "versions", label: "Versions", icon: History, count: pkg.versions.length },
     { id: "dependencies", label: "Dependencies", icon: Layers, count: dependencyCount },
+    { id: "dependents", label: "Dependents", icon: Boxes, count: dependents.data?.length },
+    { id: "versions", label: "Versions", icon: History, count: pkg.versions.length },
   ];
 
   const selectTab = (id) =>
     setParams(id === "readme" ? {} : { tab: id }, { replace: true, preventScrollReset: true });
 
-  // The Code tab keeps its version and open file in the URL so links to a file can be shared.
+  // The Code tab keeps its version and path in the URL so links to a folder or file can be shared.
   const codeVersion = pkg.versions.some((v) => v.version === params.get("version")) ? params.get("version") : pkg.latest;
   const updateCodeParams = (changes) =>
     setParams(
@@ -157,19 +162,39 @@ export default function PackageDetails() {
                 <CodePanel
                   pkg={pkg}
                   version={codeVersion}
-                  file={params.get("file")}
-                  onSelectVersion={(version) => updateCodeParams({ version, file: null })}
-                  onSelectFile={(file) => updateCodeParams({ file })}
+                  path={params.get("path") ?? ""}
+                  onSelectVersion={(version) => updateCodeParams({ version, path: null })}
+                  onNavigate={(path) => updateCodeParams({ path })}
                 />
               ) : (
                 <p className={styles.placeholder}>No versions have been published yet.</p>
               ))}
-            {tab === "versions" && <VersionsPanel pkg={pkg} />}
             {tab === "dependencies" && <DependenciesPanel dependencies={pkg.latestVersion?.dependencies ?? {}} />}
+            {tab === "dependents" && (
+              <DependentsPanel
+                name={pkg.name}
+                dependents={dependents.data}
+                error={dependents.error}
+                loading={dependents.loading}
+                reload={dependents.reload}
+              />
+            )}
+            {tab === "versions" && (
+              <VersionsPanel
+                pkg={pkg}
+                stats={stats}
+                onViewCode={(version) =>
+                  setParams(
+                    version === pkg.latest ? { tab: "code" } : { tab: "code", version },
+                    { replace: true, preventScrollReset: true },
+                  )
+                }
+              />
+            )}
           </TabPanel>
         </div>
 
-        <PackageSidebar pkg={pkg} />
+        <PackageSidebar pkg={pkg} stats={stats} />
       </div>
     </div>
   );
