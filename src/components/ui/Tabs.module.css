@@ -1,11 +1,8 @@
 .list {
   display: flex;
   gap: var(--space-1);
-  padding: var(--space-1);
   overflow-x: auto;
-  background: var(--surface-inset);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-bottom: 1px solid var(--border-strong);
   scrollbar-width: none;
 }
 
@@ -14,51 +11,69 @@
 }
 
 .tab {
+  position: relative;
   display: inline-flex;
-  flex: 1 0 auto;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 var(--space-4);
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  border: 0;
   color: var(--text-muted);
-  font-family: var(--font-heading);
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  font-weight: 500;
   white-space: nowrap;
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.tab::after {
+  content: "";
+  position: absolute;
+  right: var(--space-2);
+  bottom: -1px;
+  left: var(--space-2);
+  height: 2px;
+  background: transparent;
+  transition: background var(--duration-fast) var(--ease-standard);
 }
 
 .tab:hover {
-  background: var(--surface-hover);
   color: var(--text);
+}
+
+.tab:hover::after {
+  background: var(--border-hover);
 }
 
 .active,
 .active:hover {
-  background: var(--primary-soft);
-  border-color: rgba(99, 102, 241, 0.32);
   color: var(--text);
+  font-weight: 600;
+}
+
+.active::after,
+.active:hover::after {
+  background: var(--accent);
 }
 
 .count {
-  min-width: 22px;
+  min-width: 20px;
   padding: 0 6px;
   border-radius: var(--radius-full);
-  background: rgba(148, 163, 184, 0.14);
-  font-size: var(--fs-xs);
-  line-height: 20px;
+  background: var(--tint-3);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 18px;
   text-align: center;
 }
 
 .active .count {
-  background: rgba(99, 102, 241, 0.3);
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .panel:focus-visible {
@@ -67,7 +82,7 @@
 }
 
 /* Keep every tab visible on phones instead of hiding some behind a scroll. */
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .tab {
     flex: 1 1 auto;
     gap: 6px;

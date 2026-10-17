@@ -150,7 +150,12 @@ export default function PackageDetails() {
       <div className={styles.layout}>
         <div className={styles.main}>
           <Tabs idPrefix="package" label="Package sections" tabs={tabs} value={tab} onChange={selectTab} />
-          <TabPanel idPrefix="package" id={tab} className={cn("surface", styles.panel)}>
+          <TabPanel
+            idPrefix="package"
+            id={tab}
+            // The file browser draws its own frame, so the Code tab skips the card around it.
+            className={tab === "code" ? undefined : cn("surface", styles.panel)}
+          >
             {tab === "readme" &&
               (pkg.readme ? (
                 <Markdown>{pkg.readme}</Markdown>

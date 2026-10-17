@@ -88,14 +88,14 @@
 }
 
 .input:hover {
-  border-color: rgba(148, 163, 184, 0.36);
+  border-color: var(--border-hover);
 }
 
 .input:focus {
   outline: none;
-  background: rgba(6, 10, 19, 0.95);
+  background: var(--surface-inset);
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 0 0 3px var(--accent-line);
 }
 
 .withIcon .input {
@@ -108,12 +108,12 @@
 
 .invalid,
 .invalid:hover {
-  border-color: rgba(239, 68, 68, 0.6);
+  border-color: var(--danger-line);
 }
 
 .invalid:focus {
   border-color: var(--danger);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 0 3px var(--danger-line);
 }
 
 .textarea {
@@ -132,7 +132,7 @@
 }
 
 .select option {
-  background: #111827;
+  background: var(--surface-2);
   color: var(--text);
 }
 

@@ -14,19 +14,19 @@
   margin-bottom: var(--space-4);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  background: rgba(148, 163, 184, 0.08);
+  background: var(--tint-2);
   color: var(--text-muted);
 }
 
 .danger {
   background: var(--danger-soft);
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: var(--danger-line);
   color: var(--text-danger);
 }
 
 .indigo {
   background: var(--primary-soft);
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: var(--accent-line);
   color: var(--text-indigo);
 }
 

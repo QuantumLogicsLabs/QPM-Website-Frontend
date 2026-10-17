@@ -15,13 +15,11 @@
   align-items: flex-start;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
-  background: rgba(20, 27, 44, 0.96);
+  background: var(--surface-raised);
   border: 1px solid var(--border-strong);
   border-left: 3px solid var(--primary);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-popover);
   pointer-events: auto;
   animation: slideIn var(--duration-slow) var(--ease-out);
 }

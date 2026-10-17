@@ -9,6 +9,7 @@ import Button from "@/components/ui/Button";
 import Skeleton from "@/components/ui/Skeleton";
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
+import ThemeToggle from "./ThemeToggle";
 import UserMenu from "./UserMenu";
 import styles from "./Navbar.module.css";
 
@@ -55,6 +56,7 @@ export default function Navbar() {
         </nav>
 
         <div className={styles.actions}>
+          <ThemeToggle />
           {!isReady ? (
             <Skeleton width={132} height={34} radius="999px" />
           ) : user ? (
@@ -71,6 +73,7 @@ export default function Navbar() {
           )}
         </div>
 
+        <ThemeToggle className={styles.mobileTheme} />
         <Button
           variant="ghost"
           icon={menuOpen ? X : Menu}

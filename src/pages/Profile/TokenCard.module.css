@@ -18,7 +18,7 @@
   flex-shrink: 0;
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid var(--warning-line);
   border-radius: var(--radius-sm);
   background: var(--amber-soft);
   color: var(--text-amber);
@@ -83,7 +83,7 @@
   background: var(--surface-inset);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  color: #e2e8f0;
+  color: var(--code-text);
   font-size: 0.8rem;
   line-height: 1.7;
 }

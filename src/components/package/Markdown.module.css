@@ -59,7 +59,7 @@
 .prose a {
   color: var(--text-cyan);
   text-decoration: underline;
-  text-decoration-color: rgba(103, 232, 249, 0.35);
+  text-decoration-color: var(--accent-line);
   text-underline-offset: 3px;
 }
 
@@ -68,14 +68,14 @@
 }
 
 .prose strong {
-  color: #fff;
+  color: var(--text-strong);
 }
 
 .prose :not(pre) > code {
   padding: 0.15em 0.4em;
-  background: rgba(148, 163, 184, 0.14);
+  background: var(--tint-4);
   border-radius: var(--radius-xs);
-  color: #e0e7ff;
+  color: var(--code-text);
   font-size: 0.86em;
 }
 
@@ -90,7 +90,7 @@
 }
 
 .prose pre code {
-  color: #e2e8f0;
+  color: var(--code-text);
 }
 
 .prose blockquote {
@@ -127,7 +127,7 @@
 }
 
 .prose th {
-  background: rgba(148, 163, 184, 0.08);
+  background: var(--tint-2);
   font-weight: 600;
 }
 

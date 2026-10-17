@@ -4,9 +4,8 @@
   left: 0;
   z-index: calc(var(--z-header) + 1);
   width: 100%;
-  height: 3px;
-  background: var(--gradient-brand);
-  box-shadow: 0 0 12px var(--primary-glow);
+  height: 2px;
+  background: var(--accent);
   transform-origin: left;
   animation: grow 1.6s var(--ease-out) forwards;
 }

@@ -4,13 +4,19 @@
   "description": "Discover, publish, and install packages for the Quantum Language ecosystem.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#080b14",
-  "theme_color": "#080b14",
+  "background_color": "#0d0d0c",
+  "theme_color": "#0d0d0c",
   "icons": [
     {
       "src": "/logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "453x414",
+      "type": "image/png",
       "purpose": "any"
     }
   ]

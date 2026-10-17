@@ -14,8 +14,8 @@
 }
 
 .dropzone:hover {
-  border-color: rgba(6, 182, 212, 0.5);
-  background: rgba(6, 182, 212, 0.05);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
 }
 
 .dropzone:focus-within {
@@ -31,7 +31,7 @@
 
 .invalid,
 .invalid:hover {
-  border-color: rgba(239, 68, 68, 0.6);
+  border-color: var(--danger-line);
 }
 
 .disabled {
@@ -85,12 +85,12 @@
 /* Selected files */
 .fileList {
   background: var(--surface-inset);
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  border: 1px solid var(--success-line);
   border-radius: var(--radius-md);
 }
 
 .fileList.invalid {
-  border-color: rgba(239, 68, 68, 0.6);
+  border-color: var(--danger-line);
 }
 
 .listHeader {
