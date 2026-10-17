@@ -149,7 +149,11 @@ export default function FileDropzone({
             Select folder
           </Button>
         </div>
-        <span className={styles.meta}>Add as many files and folders as you like — they combine. Up to 100 MB in total; node_modules and .git are skipped.</span>
+        <span className={styles.meta}>
+          Browsers let a picker choose either files or one folder, not both — to add files and folders
+          in one go, drag them here together. Every pick adds to the list. Up to 100 MB in total;
+          node_modules and .git are skipped.
+        </span>
       </div>
 
       {items.length > 0 && (
