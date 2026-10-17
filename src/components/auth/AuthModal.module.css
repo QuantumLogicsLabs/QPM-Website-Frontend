@@ -8,8 +8,7 @@
 
 .logo {
   margin-bottom: var(--space-4);
-  border-radius: 12px;
-  box-shadow: 0 0 24px var(--primary-glow);
+  object-fit: contain;
 }
 
 .title {

@@ -20,7 +20,7 @@ const METHODS = [
   { id: "github", label: "Import from GitHub", icon: GithubIcon },
 ];
 
-const BRAND_COLORS = ["#6366f1", "#06b6d4", "#a855f7", "#10b981"];
+const BRAND_COLORS = ["#ff5a1f", "#ff8a5c", "#170800", "#ecebe6"];
 
 export default function Publish() {
   const { user } = useAuth();

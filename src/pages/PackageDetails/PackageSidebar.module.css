@@ -101,7 +101,7 @@
   display: inline-block;
   padding: 3px 10px;
   background: var(--cyan-soft);
-  border: 1px solid rgba(6, 182, 212, 0.24);
+  border: 1px solid var(--accent-line);
   border-radius: var(--radius-full);
   color: var(--text-cyan);
   font-size: var(--fs-xs);
@@ -109,7 +109,7 @@
 }
 
 .keyword:hover {
-  background: rgba(6, 182, 212, 0.2);
+  background: var(--accent-line);
   border-color: var(--cyan);
   color: var(--text-cyan);
 }

@@ -12,13 +12,12 @@
 }
 
 .mark {
-  border-radius: 10px;
-  box-shadow: 0 0 18px var(--primary-glow);
+  object-fit: contain;
   transition: transform var(--duration-base) var(--ease-out);
 }
 
 .logo:hover .mark {
-  transform: rotate(-6deg) scale(1.04);
+  transform: translateY(-1px);
 }
 
 .wordmark {
@@ -29,16 +28,16 @@
 
 .name {
   font-family: var(--font-heading);
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.04em;
 }
 
 .tag {
-  margin-top: 3px;
-  color: var(--text-cyan);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  margin-top: 2px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }

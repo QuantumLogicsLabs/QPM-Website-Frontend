@@ -19,7 +19,7 @@
   gap: var(--space-4);
   min-height: 52px;
   padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
-  background: rgba(148, 163, 184, 0.04);
+  background: var(--tint-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   transition: border-color var(--duration-fast) var(--ease-standard);
@@ -120,7 +120,7 @@
   font-family: var(--font-mono);
   font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: rgba(34, 211, 238, 0.35);
+  text-decoration-color: var(--accent-line);
   text-underline-offset: 3px;
 }
 

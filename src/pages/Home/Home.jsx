@@ -2,16 +2,12 @@ import { useMemo } from "react";
 import { Link } from "react-router";
 import {
   ArrowRight,
-  Boxes,
-  Download,
   HardDrive,
   Network,
   PackageSearch,
   RefreshCw,
   ShieldCheck,
-  Sparkles,
   Upload,
-  Users,
   Zap,
 } from "lucide-react";
 import { SEARCH_LIMIT, searchPackages } from "@/api/registry";
@@ -22,7 +18,6 @@ import { formatCompact } from "@/utils/format";
 import SearchBar from "@/components/layout/SearchBar";
 import PackageGrid from "@/components/package/PackageGrid";
 import Alert from "@/components/ui/Alert";
-import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import CommandSnippet from "@/components/ui/CommandSnippet";
 import EmptyState from "@/components/ui/EmptyState";
@@ -34,44 +29,40 @@ import styles from "./Home.module.css";
 const FEATURES = [
   {
     icon: Network,
-    tone: "indigo",
-    title: "A registry, not just a site",
+    title: "Speaks the npm protocol",
     body: "Package documents are served in an npm-compatible shape — dist-tags, versions and tarballs — so the qpm CLI reads straight from it.",
   },
   {
     icon: HardDrive,
-    tone: "cyan",
-    title: "Google Drive as the vault",
+    title: "Tarballs on Google Drive",
     body: "Every published .tgz streams into Google Drive and back out on install. No object-storage bill, no extra infrastructure.",
   },
   {
     icon: Zap,
-    tone: "emerald",
-    title: "Metadata that moves fast",
+    title: "Searchable metadata",
     body: "Names, versions, keywords, dependencies and download counts live in MongoDB behind text indexes for instant search.",
   },
   {
     icon: ShieldCheck,
-    tone: "violet",
-    title: "Guests welcome, authors protected",
+    title: "Names belong to their authors",
     body: "Publish to the community namespace, or sign in and the registry locks each package name to your account.",
   },
 ];
 
 const STEPS = [
   {
-    title: "Find a package",
-    body: "Search by name, description or keyword and compare downloads, versions and READMEs.",
+    title: "Find",
+    body: "Search by name, description or keyword. Read the README, browse the code, check the versions.",
     action: { to: "/explore", label: "Browse the registry" },
   },
   {
-    title: "Install it",
+    title: "Install",
     body: "Pull any package into your project with the qpm CLI.",
     command: "qpm install quantum-core",
   },
   {
-    title: "Publish your own",
-    body: "Upload a .tgz archive or import straight from a public GitHub repository.",
+    title: "Publish",
+    body: "Upload a folder or a .tgz, or import straight from a public GitHub repository.",
     action: { to: "/publish", label: "Publish a package" },
   },
 ];
@@ -88,16 +79,17 @@ export default function Home() {
     const capped = (data?.total ?? 0) >= SEARCH_LIMIT;
     const owners = new Set(packages.map((pkg) => pkg.owner ?? "community"));
     return [
-      { icon: Boxes, label: "Packages", value: `${packages.length}${capped ? "+" : ""}` },
+      { label: "Packages", value: `${packages.length}${capped ? "+" : ""}` },
       {
-        icon: Download,
         label: "Downloads",
         value: `${formatCompact(packages.reduce((sum, pkg) => sum + pkg.downloads, 0))}${capped ? "+" : ""}`,
       },
-      { icon: Users, label: "Publishers", value: `${owners.size}${capped ? "+" : ""}` },
+      { label: "Publishers", value: `${owners.size}${capped ? "+" : ""}` },
     ];
   }, [data, packages]);
   const tags = useMemo(() => topKeywords(packages, 5), [packages]);
+
+  const sample = packages[0]?.name ?? "quantum-equations";
 
   return (
     <>
@@ -105,39 +97,61 @@ export default function Home() {
 
       {/* Hero */}
       <section className={styles.hero}>
-        <div className={cn("container", styles.heroInner)}>
-          <Badge tone="cyan" icon={Sparkles}>
-            The package registry for Quantum Language
-          </Badge>
-          <h1 className={styles.title}>
-            Build, share and install <span className="text-gradient">Quantum packages</span>
-          </h1>
-          <p className={styles.lead}>
-            Discover community modules, publish your own in seconds, and install anything with a
-            single command.
-          </p>
-
-          <SearchBar size="lg" placeholder="Search packages, e.g. quantum-core" className={styles.heroSearch} />
-
-          {tags.length > 0 && (
-            <p className={styles.trending}>
-              <span>Popular:</span>
-              {tags.map((tag) => (
-                <Link key={tag} to={`/explore?q=${encodeURIComponent(tag)}`} className={styles.trendingTag}>
-                  #{tag}
-                </Link>
-              ))}
+        <div className={cn("container", styles.heroGrid)}>
+          <div className={styles.heroCopy}>
+            <p className={styles.eyebrow}>
+              <span className={styles.eyebrowDot} aria-hidden="true" />
+              Package registry for Quantum Language
             </p>
-          )}
+            <h1 className={styles.title}>
+              Ship Quantum code in one command<span className="text-accent">.</span>
+            </h1>
+            <p className={styles.lead}>
+              Find community modules, publish your own from a folder or a GitHub repo, and pull anything into
+              your project with <code>qpm install</code>.
+            </p>
 
+            <SearchBar size="lg" placeholder="Search packages…" className={styles.heroSearch} />
+
+            {tags.length > 0 && (
+              <p className={styles.trending}>
+                <span>Popular</span>
+                {tags.map((tag) => (
+                  <Link key={tag} to={`/explore?q=${encodeURIComponent(tag)}`} className={styles.trendingTag}>
+                    {tag}
+                  </Link>
+                ))}
+              </p>
+            )}
+          </div>
+
+          <div className={styles.terminal} aria-hidden="true">
+            <div className={styles.terminalBar}>
+              <span />
+              <span />
+              <span />
+              <em>~/my-project</em>
+            </div>
+            <pre className={styles.terminalBody}>
+              <span className={styles.prompt}>$</span> qpm install {sample}
+              {"\n"}
+              <span className={styles.dim}>  resolving {sample}@latest</span>
+              {"\n"}
+              <span className={styles.dim}>  fetching tarball from registry</span>
+              {"\n"}
+              <span className={styles.ok}>  ✓</span> added 1 package
+              {"\n\n"}
+              <span className={styles.prompt}>$</span> <span className={styles.cursor} />
+            </pre>
+          </div>
+        </div>
+
+        <div className="container">
           <dl className={styles.stats}>
-            {stats.map(({ icon: Icon, label, value }) => (
+            {stats.map(({ label, value }) => (
               <div key={label} className={styles.stat}>
-                <dt>
-                  <Icon size={16} aria-hidden="true" />
-                  {label}
-                </dt>
-                <dd>{initialLoading ? <Skeleton width={48} height={26} /> : error ? "—" : value}</dd>
+                <dt>{label}</dt>
+                <dd>{initialLoading ? <Skeleton width={56} height={30} /> : error ? "—" : value}</dd>
               </div>
             ))}
           </dl>
@@ -149,14 +163,14 @@ export default function Home() {
         <div className="container">
           <div className={styles.sectionHeader}>
             <div>
+              <p className={styles.sectionIndex}>01</p>
               <h2 id="popular-heading" className={styles.sectionTitle}>
                 Popular packages
               </h2>
-              <p className={styles.sectionLead}>The most downloaded modules in the registry.</p>
             </div>
-            <Button to="/explore" variant="outline" size="sm" iconRight={ArrowRight}>
-              View all
-            </Button>
+            <Link to="/explore" className={styles.sectionLink}>
+              View all <ArrowRight size={16} aria-hidden="true" />
+            </Link>
           </div>
 
           {error ? (
@@ -195,17 +209,17 @@ export default function Home() {
         <div className="container">
           <div className={styles.sectionHeader}>
             <div>
+              <p className={styles.sectionIndex}>02</p>
               <h2 id="steps-heading" className={styles.sectionTitle}>
-                Up and running in three steps
+                How it works
               </h2>
-              <p className={styles.sectionLead}>From discovery to your first published version.</p>
             </div>
           </div>
           <ol className={styles.steps}>
             {STEPS.map((step, index) => (
-              <li key={step.title} className={cn("surface", styles.step)}>
+              <li key={step.title} className={styles.step}>
                 <span className={styles.stepNumber} aria-hidden="true">
-                  {index + 1}
+                  {String(index + 1).padStart(2, "0")}
                 </span>
                 <h3 className={styles.stepTitle}>{step.title}</h3>
                 <p className={styles.stepBody}>{step.body}</p>
@@ -230,18 +244,16 @@ export default function Home() {
         <div className="container">
           <div className={styles.sectionHeader}>
             <div>
+              <p className={styles.sectionIndex}>03</p>
               <h2 id="features-heading" className={styles.sectionTitle}>
-                Why QPM
+                Under the hood
               </h2>
-              <p className={styles.sectionLead}>Built for speed, reliability and zero-cost storage.</p>
             </div>
           </div>
           <ul role="list" className={styles.features}>
-            {FEATURES.map(({ icon: Icon, tone, title, body }) => (
-              <li key={title} className={cn("surface", styles.feature)}>
-                <span className={cn(styles.featureIcon, styles[tone])}>
-                  <Icon size={22} aria-hidden="true" />
-                </span>
+            {FEATURES.map(({ icon: Icon, title, body }) => (
+              <li key={title} className={styles.feature}>
+                <Icon size={20} aria-hidden="true" className={styles.featureIcon} />
                 <h3 className={styles.featureTitle}>{title}</h3>
                 <p className={styles.featureBody}>{body}</p>
               </li>
@@ -255,19 +267,18 @@ export default function Home() {
         <div className="container">
           <div className={styles.cta}>
             <div>
-              <h2 className={styles.ctaTitle}>Ready to ship your package?</h2>
-              <p className={styles.ctaBody}>
-                Publish in under a minute — upload a tarball or point us at a GitHub repo.
-              </p>
+              <h2 className={styles.ctaTitle}>Got a package? Put it on qpm.</h2>
+              <p className={styles.ctaBody}>Upload a folder or a tarball, or point us at a GitHub repo.</p>
             </div>
             <div className={styles.ctaActions}>
-              <Button to="/publish" size="lg" icon={Upload}>
+              <Link to="/publish" className={styles.ctaPrimary}>
+                <Upload size={17} aria-hidden="true" />
                 Publish a package
-              </Button>
+              </Link>
               {!user && (
-                <Button variant="secondary" size="lg" onClick={() => openAuth("signup")}>
+                <button type="button" className={styles.ctaSecondary} onClick={() => openAuth("signup")}>
                   Create an account
-                </Button>
+                </button>
               )}
             </div>
           </div>

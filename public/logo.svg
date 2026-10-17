@@ -1,14 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 453 414" fill="none">
   <defs>
-    <linearGradient id="qpm-gradient" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#6366f1" />
-      <stop offset="1" stop-color="#06b6d4" />
+    <linearGradient id="qpm-hex" x1="70" y1="40" x2="390" y2="395" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffb02e" />
+      <stop offset="0.5" stop-color="#ff6a1a" />
+      <stop offset="1" stop-color="#e2410b" />
     </linearGradient>
+    <linearGradient id="qpm-ring" x1="130" y1="105" x2="320" y2="335" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffa62b" />
+      <stop offset="0.55" stop-color="#ff6517" />
+      <stop offset="1" stop-color="#d93a08" />
+    </linearGradient>
+    <linearGradient id="qpm-orbit" x1="60" y1="280" x2="400" y2="130" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff7a1c" />
+      <stop offset="0.5" stop-color="#ffb43a" />
+      <stop offset="1" stop-color="#ff8a24" />
+    </linearGradient>
+    <radialGradient id="qpm-ball" cx="0.35" cy="0.35" r="0.75">
+      <stop stop-color="#ffd27a" />
+      <stop offset="1" stop-color="#f06414" />
+    </radialGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#qpm-gradient)" />
-  <g stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M32 14 14 23l18 9 18-9-18-9Z" />
-    <path d="m14 32 18 9 18-9" />
-    <path d="m14 41 18 9 18-9" />
-  </g>
+
+  <!-- Hexagon frame -->
+  <path
+    d="M226.5 40 384 130v172L226.5 392 69 302V130Z"
+    stroke="url(#qpm-hex)"
+    stroke-width="11"
+    stroke-linejoin="round"
+  />
+
+  <!-- Orbit, back half (behind the Q) -->
+  <path
+    d="M80 268C60 228 170 162 290 140c62-11 100-8 104-1"
+    stroke="url(#qpm-orbit)"
+    stroke-width="7"
+    stroke-linecap="round"
+    opacity="0.85"
+  />
+
+  <!-- Q: ring and tail -->
+  <circle cx="226" cy="216" r="98" stroke="url(#qpm-ring)" stroke-width="40" />
+  <path d="M258 282 296 252 347 323 303 323Z" fill="url(#qpm-ring)" />
+
+  <!-- Cube: top, left and right faces -->
+  <path d="M222 150 273 177 222 204 171 177Z" fill="#ffab3d" />
+  <path d="M168 183 219 210V264L168 237Z" fill="#ff8a1f" />
+  <path d="M225 210 276 183V237L225 264Z" fill="#e85a10" />
+
+  <!-- Orbit, front half (over the Q) and its ball -->
+  <path
+    d="M80 268c22 34 160 18 252-52 42-32 60-62 62-77"
+    stroke="url(#qpm-orbit)"
+    stroke-width="12"
+    stroke-linecap="round"
+  />
+  <circle cx="392" cy="131" r="13" fill="url(#qpm-ball)" />
 </svg>

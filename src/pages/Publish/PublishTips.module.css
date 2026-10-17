@@ -62,7 +62,7 @@
   background: var(--surface-inset);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  color: #e2e8f0;
+  color: var(--code-text);
   font-size: 0.75rem;
   line-height: 1.7;
 }

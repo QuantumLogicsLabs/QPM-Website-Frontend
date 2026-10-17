@@ -3,14 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#080b14" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0d0d0c" />
+    <meta name="color-scheme" content="dark light" />
+    <!-- Apply the saved (or OS) theme before first paint so the page never flashes. -->
+    <script>
+      (function () {
+        var theme;
+        try {
+          theme = localStorage.getItem("qpm-theme");
+        } catch (e) {}
+        if (theme !== "light" && theme !== "dark") {
+          theme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+        document.documentElement.dataset.theme = theme;
+        document.querySelector('meta[name="theme-color"]').content = theme === "light" ? "#f5f4ef" : "#0d0d0c";
+      })();
+    </script>
     <title>QPM — Quantum Package Manager Registry</title>
     <meta name="description" content="Discover, publish, and install packages for the Quantum Language ecosystem." />
 
     <!-- Static assets served from /public -->
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <link rel="apple-touch-icon" href="/logo.svg" />
+    <link rel="alternate icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
     <meta property="og:type" content="website" />
@@ -18,11 +33,11 @@
     <meta property="og:title" content="QPM — Quantum Package Manager Registry" />
     <meta property="og:description" content="Discover, publish, and install packages for the Quantum Language ecosystem." />
 
-    <!-- Fonts: Outfit (headings), Plus Jakarta Sans (body), Fira Code (mono) -->
+    <!-- Fonts: Bricolage Grotesque (headings), Geist (body), JetBrains Mono (code) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
   </head>

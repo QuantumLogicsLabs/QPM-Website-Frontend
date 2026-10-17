@@ -2,13 +2,13 @@
   position: relative;
   height: 6px;
   overflow: hidden;
-  background: rgba(148, 163, 184, 0.14);
+  background: var(--tint-4);
   border-radius: var(--radius-full);
 }
 
 .bar {
   height: 100%;
-  background: var(--gradient-brand);
+  background: var(--accent);
   border-radius: inherit;
   transition: width var(--duration-base) var(--ease-standard);
 }

@@ -38,7 +38,7 @@ export default function AuthModal({ initialMode = "login", onClose }) {
   return (
     <Modal onClose={onClose} labelledBy={`${id}-title`} describedBy={`${id}-subtitle`}>
       <header className={styles.header}>
-        <img src="/logo.svg" alt="" width={44} height={44} className={styles.logo} />
+        <img src="/logo.svg" alt="" width={56} height={51} className={styles.logo} />
         <h2 id={`${id}-title`} className={styles.title}>
           {copy.title}
         </h2>

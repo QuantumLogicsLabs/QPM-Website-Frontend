@@ -21,13 +21,13 @@
   padding: var(--space-2) var(--space-4);
   background: var(--primary);
   border-radius: var(--radius-sm);
-  color: #fff;
+  color: var(--text-strong);
   font-weight: 600;
   transform: translateY(-200%);
   transition: transform var(--duration-fast) var(--ease-standard);
 }
 
 .skipLink:focus {
-  color: #fff;
+  color: var(--text-strong);
   transform: none;
 }
