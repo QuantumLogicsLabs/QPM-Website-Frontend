@@ -18,6 +18,8 @@ npm run lint      # ESLint (flat config, React hooks + refresh rules)
 
 Run the backend alongside it. To point a production build at a different API origin, set `VITE_API_BASE_URL` (defaults to `/api`).
 
+On Vercel, [`vercel.json`](vercel.json) proxies `/api/*` to the backend deployment (`qpm-website-backend.vercel.app`) and serves `index.html` for every other route so client-side routes survive a refresh.
+
 ## Project structure
 
 ```
