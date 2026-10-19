@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Upload } from "lucide-react";
 import { isAbortError } from "@/api/client";
-import { publishPackage } from "@/api/registry";
+import { MAX_DESCRIPTION_LENGTH, publishPackage } from "@/api/registry";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { describedBy } from "@/utils/a11y";
@@ -218,7 +218,7 @@ export default function UploadForm({ initialName = "", onPublished }) {
             value={values.description}
             onChange={update("description")}
             placeholder="High-performance utility functions for Quantum Language"
-            maxLength={280}
+            maxLength={MAX_DESCRIPTION_LENGTH}
           />
         </Field>
 

@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
-import { Boxes, ChevronRight, Clock, CloudOff, Code, Download, FileText, History, Layers, PackageX, RefreshCw, Scale, Upload, User } from "lucide-react";
+import { Boxes, ChevronRight, Clock, CloudOff, Code, Download, FileText, History, Layers, PackageX, Pencil, RefreshCw, Scale, Upload, User } from "lucide-react";
 import { getPackage, getPackageDependents, getPackageStats } from "@/api/registry";
+import { useAuth } from "@/hooks/useAuth";
 import { useResource } from "@/hooks/useResource";
 import { cn } from "@/utils/cn";
 import { formatDate, formatNumber, timeAgo } from "@/utils/format";
+import EditDescriptionModal from "@/components/package/EditDescriptionModal";
 import Markdown from "@/components/package/Markdown";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
@@ -28,6 +31,10 @@ export default function PackageDetails() {
   // Secondary data loads alongside the package; failures only affect their own section.
   const { data: stats } = useResource((signal) => getPackageStats(name, { signal }).catch(() => null), [name]);
   const dependents = useResource((signal) => getPackageDependents(name, { signal }), [name]);
+  const { user, token } = useAuth();
+  const [editing, setEditing] = useState(false);
+  // A saved edit is shown in place: reloading the package would flash the whole page to its skeleton.
+  const [savedDescription, setSavedDescription] = useState(null);
 
   if (loading) return <PackageDetailsSkeleton />;
 
@@ -60,6 +67,9 @@ export default function PackageDetails() {
       </div>
     );
   }
+
+  const isOwner = Boolean(user && pkg.owner && user.username === pkg.owner);
+  const description = savedDescription?.name === pkg.name ? savedDescription.description : pkg.description;
 
   const dependencyCount = Object.keys(pkg.latestVersion?.dependencies ?? {}).length;
   const tabs = [
@@ -115,9 +125,21 @@ export default function PackageDetails() {
             </Badge>
           )}
         </div>
-        <p className={cn(styles.description, !pkg.description && styles.placeholder)}>
-          {pkg.description || "No description provided."}
-        </p>
+        <div className={styles.descriptionRow}>
+          <p className={cn(styles.description, !description && styles.placeholder)}>
+            {description || "No description provided."}
+          </p>
+          {isOwner && (
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={Pencil}
+              aria-label="Edit description"
+              title="Edit description"
+              onClick={() => setEditing(true)}
+            />
+          )}
+        </div>
         <ul role="list" className={styles.meta}>
           <li>
             <User size={15} aria-hidden="true" />
@@ -201,6 +223,18 @@ export default function PackageDetails() {
 
         <PackageSidebar pkg={pkg} stats={stats} />
       </div>
+
+      {editing && (
+        <EditDescriptionModal
+          pkg={{ ...pkg, description }}
+          token={token}
+          onClose={() => setEditing(false)}
+          onSaved={(saved) => {
+            setSavedDescription({ name: pkg.name, description: saved });
+            setEditing(false);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { ArrowRight, CircleCheck } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { publishCurlSnippet } from "@/utils/snippets";
+import { qpmPublishSnippet } from "@/utils/snippets";
 import CopyButton from "@/components/ui/CopyButton";
 import styles from "./PublishTips.module.css";
 
@@ -13,7 +13,7 @@ const TIPS = [
 ];
 
 export default function PublishTips() {
-  const curl = publishCurlSnippet();
+  const commands = qpmPublishSnippet({ comments: false });
 
   return (
     <aside className={styles.aside} aria-label="Publishing tips">
@@ -34,11 +34,13 @@ export default function PublishTips() {
       <section className={cn("surface", styles.card)}>
         <div className={styles.cardHeader}>
           <h2 className={styles.heading}>Prefer the terminal?</h2>
-          <CopyButton value={curl} label="Copy curl command" />
+          <CopyButton value={commands} label="Copy commands" />
         </div>
-        <p className={styles.body}>Publish with curl using the API token from your profile.</p>
+        <p className={styles.body}>
+          Log in to qpm once with the API token from your profile, then run these in your package folder.
+        </p>
         <pre className={styles.code}>
-          <code>{curl}</code>
+          <code>{commands}</code>
         </pre>
         <Link to="/profile" className={styles.link}>
           Get your API token
