@@ -6,6 +6,7 @@ import { useResource } from "@/hooks/useResource";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils/cn";
 import { formatDate, formatNumber, timeAgo } from "@/utils/format";
+import EditDescriptionModal from "@/components/package/EditDescriptionModal";
 import PackageGrid from "@/components/package/PackageGrid";
 import Alert from "@/components/ui/Alert";
 import Avatar from "@/components/ui/Avatar";
@@ -53,6 +54,7 @@ function Dashboard({ user, token }) {
     [token, user.username],
   );
 
+  const [toEdit, setToEdit] = useState(null);
   const [toDelete, setToDelete] = useState(null);
 
   const packages = useMemo(() => data ?? [], [data]);
@@ -126,7 +128,7 @@ function Dashboard({ user, token }) {
         ))}
       </dl>
 
-      <TokenCard token={token} />
+      <TokenCard sessionToken={token} />
 
       <section className={styles.packages} aria-labelledby="my-packages-heading">
         <div className={styles.sectionHeader}>
@@ -169,9 +171,21 @@ function Dashboard({ user, token }) {
             </Button>
           </EmptyState>
         ) : (
-          <PackageGrid packages={packages} onDelete={setToDelete} />
+          <PackageGrid packages={packages} onEdit={setToEdit} onDelete={setToDelete} />
         )}
       </section>
+
+      {toEdit && (
+        <EditDescriptionModal
+          pkg={toEdit}
+          token={token}
+          onClose={() => setToEdit(null)}
+          onSaved={() => {
+            setToEdit(null);
+            reload();
+          }}
+        />
+      )}
 
       {toDelete && (
         <DeletePackageModal

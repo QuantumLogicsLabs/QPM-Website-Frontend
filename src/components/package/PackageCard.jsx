@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Clock, Download, Trash2 } from "lucide-react";
+import { Clock, Download, Pencil, Trash2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { formatCompact, formatDate, formatNumber, timeAgo } from "@/utils/format";
 import Badge from "@/components/ui/Badge";
@@ -10,8 +10,8 @@ import styles from "./PackageCard.module.css";
 
 const MAX_KEYWORDS = 3;
 
-/** Pass `onDelete` to show a delete button (used on the owner's profile). */
-export default function PackageCard({ pkg, onDelete }) {
+/** Pass `onEdit` / `onDelete` to show edit and delete buttons (used on the owner's profile). */
+export default function PackageCard({ pkg, onEdit, onDelete }) {
   const { name, description, version, keywords, downloads, owner, updatedAt } = pkg;
   const updated = timeAgo(updatedAt);
   const extraKeywords = keywords.length - MAX_KEYWORDS;
@@ -69,6 +69,17 @@ export default function PackageCard({ pkg, onDelete }) {
           </span>
         )}
         <CopyButton value={`qpm install ${name}`} label={`Copy install command for ${name}`} className={styles.copy} />
+        {onEdit && (
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={Pencil}
+            aria-label={`Edit description of ${name}`}
+            title="Edit description"
+            className={styles.action}
+            onClick={() => onEdit(pkg)}
+          />
+        )}
         {onDelete && (
           <Button
             variant="ghost"
@@ -76,7 +87,7 @@ export default function PackageCard({ pkg, onDelete }) {
             icon={Trash2}
             aria-label={`Delete ${name}`}
             title={`Delete ${name}`}
-            className={styles.delete}
+            className={cn(styles.action, styles.delete)}
             onClick={() => onDelete(pkg)}
           />
         )}

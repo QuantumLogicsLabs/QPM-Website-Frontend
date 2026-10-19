@@ -103,6 +103,13 @@ export async function getPackageDependents(name, { signal } = {}) {
   return data?.dependents ?? [];
 }
 
+/** The backend rejects package descriptions longer than this. */
+export const MAX_DESCRIPTION_LENGTH = 280;
+
+/** Changes a package's description. Only its owner may do this. */
+export const updatePackageDescription = (name, description, { token, signal } = {}) =>
+  request(`/registry/${encodeURIComponent(name)}`, { method: "PATCH", body: { description }, token, signal });
+
 /** Deletes a package and all of its versions. Only its owner may do this. */
 export const deletePackage = (name, { token, signal } = {}) =>
   request(`/registry/${encodeURIComponent(name)}`, { method: "DELETE", token, signal });

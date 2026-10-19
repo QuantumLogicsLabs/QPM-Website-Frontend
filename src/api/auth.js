@@ -37,3 +37,16 @@ export const signup = ({ username, email, password, bio = "" }) =>
 
 /** @returns {Promise<{ user: object }>} */
 export const getCurrentUser = (token, { signal } = {}) => request("/auth/me", { token, signal });
+
+/**
+ * The account's API token for `qpm login` and scripts. Unlike the session token it doesn't expire.
+ * @returns {Promise<{ token: string }>}
+ */
+export const getApiToken = (token, { signal } = {}) =>
+  request("/auth/api-token", { token, signal, cache: "no-store" });
+
+/**
+ * Replaces the API token; every earlier one stops working. Needs a session token.
+ * @returns {Promise<{ token: string }>}
+ */
+export const regenerateApiToken = (token) => request("/auth/api-token", { method: "POST", token });

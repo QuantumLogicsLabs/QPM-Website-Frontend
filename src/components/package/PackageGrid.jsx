@@ -11,6 +11,7 @@ export default function PackageGrid({
   loading = false,
   busy = false,
   skeletonCount = 6,
+  onEdit,
   onDelete,
   className,
 }) {
@@ -31,7 +32,7 @@ export default function PackageGrid({
     <ul role="list" className={cn(styles.grid, busy && styles.busy, className)} aria-busy={busy || undefined}>
       {packages.map((pkg) => (
         <li key={pkg.name} className={styles.item}>
-          <PackageCard pkg={pkg} onDelete={onDelete} />
+          <PackageCard pkg={pkg} onEdit={onEdit} onDelete={onDelete} />
         </li>
       ))}
     </ul>
