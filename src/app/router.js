@@ -27,6 +27,8 @@ export const router = createBrowserRouter([
           { path: "package/:name", lazy: page(() => import("@/pages/PackageDetails/PackageDetails")) },
           { path: "publish", lazy: page(() => import("@/pages/Publish/Publish")) },
           { path: "profile", lazy: page(() => import("@/pages/Profile/Profile")) },
+          { path: "guides", lazy: page(() => import("@/pages/Guides/Guides")) },
+          { path: "guides/:slug", lazy: page(() => import("@/pages/Guides/Guide")) },
           { path: "*", Component: NotFound },
         ],
       },

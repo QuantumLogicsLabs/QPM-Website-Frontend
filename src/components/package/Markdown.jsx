@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/utils/cn";
@@ -20,13 +21,13 @@ const COMPONENTS = {
   h4: demoted(4),
   h5: demoted(5),
   h6: demoted(6),
-  // External links open in a new tab; `node` is stripped so it isn't passed to the DOM.
-  a: ({ node: _node, href = "", ...props }) =>
-    /^https?:\/\//i.test(href) ? (
-      <a href={href} target="_blank" rel="noopener noreferrer" {...props} />
-    ) : (
-      <a href={href} {...props} />
-    ),
+  // External links open in a new tab and site paths stay in the router;
+  // `node` is stripped so it isn't passed to the DOM.
+  a: ({ node: _node, href = "", ...props }) => {
+    if (/^https?:\/\//i.test(href)) return <a href={href} target="_blank" rel="noopener noreferrer" {...props} />;
+    if (/^\/(?!\/)/.test(href)) return <Link to={href} {...props} />;
+    return <a href={href} {...props} />;
+  },
 };
 
 /** Renders README markdown (GitHub-flavoured). Raw HTML is not rendered. */

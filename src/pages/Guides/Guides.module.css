@@ -1,0 +1,239 @@
+/* ── Index ─────────────────────────────────────────────────────────── */
+
+.header {
+  max-width: 640px;
+  margin-bottom: var(--space-8);
+}
+
+.title {
+  font-size: var(--fs-3xl);
+}
+
+.lead {
+  margin-top: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--fs-lg);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.grid li {
+  display: flex;
+}
+
+.card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  color: inherit;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.card:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+}
+
+.number {
+  margin-bottom: var(--space-2);
+  color: var(--text-accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.cardTitle {
+  font-size: var(--fs-lg);
+}
+
+.cardSummary {
+  flex: 1;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.cardMeta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-3);
+  color: var(--text-dim);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.card:hover .cardMeta {
+  color: var(--text-accent);
+}
+
+/* ── Article ───────────────────────────────────────────────────────── */
+
+.layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.sidebar {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-6));
+}
+
+.sidebarHeading {
+  margin-bottom: var(--space-3);
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sidebarLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--fs-sm);
+}
+
+.sidebarLink {
+  display: block;
+  padding: 6px var(--space-3);
+  border-left: 2px solid var(--border);
+  color: var(--text-muted);
+}
+
+.sidebarLink:hover {
+  border-left-color: var(--border-hover);
+  color: var(--text);
+}
+
+.sidebarLink.active {
+  border-left-color: var(--accent);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.article {
+  max-width: 760px;
+  min-width: 0;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.back:hover {
+  color: var(--text);
+}
+
+.articleHeader {
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border);
+}
+
+.articleTitle {
+  font-size: var(--fs-3xl);
+}
+
+.readTime {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  color: var(--text-dim);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.articleFooter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-top: var(--space-12);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border);
+}
+
+.edit {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.edit:hover {
+  color: var(--text);
+}
+
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.pagerLink {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  color: var(--text);
+  font-weight: 600;
+  transition: border-color 0.15s ease;
+}
+
+.pagerLink:hover {
+  border-color: var(--border-hover);
+}
+
+.pagerNext {
+  grid-column: 2;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.pagerLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-dim);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .pager {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pagerNext {
+    grid-column: auto;
+  }
+}
