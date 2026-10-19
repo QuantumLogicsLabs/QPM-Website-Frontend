@@ -16,6 +16,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;

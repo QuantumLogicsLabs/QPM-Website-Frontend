@@ -6,7 +6,7 @@ import { useResource } from "@/hooks/useResource";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils/cn";
 import { formatDate, formatNumber, timeAgo } from "@/utils/format";
-import EditDescriptionModal from "@/components/package/EditDescriptionModal";
+import EditPackageModal from "@/components/package/EditPackageModal";
 import PackageGrid from "@/components/package/PackageGrid";
 import Alert from "@/components/ui/Alert";
 import Avatar from "@/components/ui/Avatar";
@@ -176,7 +176,7 @@ function Dashboard({ user, token }) {
       </section>
 
       {toEdit && (
-        <EditDescriptionModal
+        <EditPackageModal
           pkg={toEdit}
           token={token}
           onClose={() => setToEdit(null)}
