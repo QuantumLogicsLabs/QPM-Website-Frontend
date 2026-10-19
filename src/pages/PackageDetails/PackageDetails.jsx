@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useResource } from "@/hooks/useResource";
 import { cn } from "@/utils/cn";
 import { formatDate, formatNumber, timeAgo } from "@/utils/format";
-import EditDescriptionModal from "@/components/package/EditDescriptionModal";
+import EditPackageModal from "@/components/package/EditPackageModal";
 import Markdown from "@/components/package/Markdown";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
@@ -27,14 +27,14 @@ export default function PackageDetails() {
   const { name } = useParams();
   const [params, setParams] = useSearchParams();
   const tab = TAB_IDS.includes(params.get("tab")) ? params.get("tab") : "readme";
-  const { data: pkg, error, loading, reload } = useResource((signal) => getPackage(name, { signal }), [name]);
+  const { data: loadedPkg, error, loading, reload } = useResource((signal) => getPackage(name, { signal }), [name]);
   // Secondary data loads alongside the package; failures only affect their own section.
   const { data: stats } = useResource((signal) => getPackageStats(name, { signal }).catch(() => null), [name]);
   const dependents = useResource((signal) => getPackageDependents(name, { signal }), [name]);
   const { user, token } = useAuth();
   const [editing, setEditing] = useState(false);
   // A saved edit is shown in place: reloading the package would flash the whole page to its skeleton.
-  const [savedDescription, setSavedDescription] = useState(null);
+  const [savedEdit, setSavedEdit] = useState(null);
 
   if (loading) return <PackageDetailsSkeleton />;
 
@@ -68,8 +68,8 @@ export default function PackageDetails() {
     );
   }
 
+  const pkg = savedEdit?.name === loadedPkg.name ? { ...loadedPkg, ...savedEdit } : loadedPkg;
   const isOwner = Boolean(user && pkg.owner && user.username === pkg.owner);
-  const description = savedDescription?.name === pkg.name ? savedDescription.description : pkg.description;
 
   const dependencyCount = Object.keys(pkg.latestVersion?.dependencies ?? {}).length;
   const tabs = [
@@ -126,16 +126,16 @@ export default function PackageDetails() {
           )}
         </div>
         <div className={styles.descriptionRow}>
-          <p className={cn(styles.description, !description && styles.placeholder)}>
-            {description || "No description provided."}
+          <p className={cn(styles.description, !pkg.description && styles.placeholder)}>
+            {pkg.description || "No description provided."}
           </p>
           {isOwner && (
             <Button
               variant="ghost"
               size="sm"
               icon={Pencil}
-              aria-label="Edit description"
-              title="Edit description"
+              aria-label="Edit description and keywords"
+              title="Edit description and keywords"
               onClick={() => setEditing(true)}
             />
           )}
@@ -225,12 +225,12 @@ export default function PackageDetails() {
       </div>
 
       {editing && (
-        <EditDescriptionModal
-          pkg={{ ...pkg, description }}
+        <EditPackageModal
+          pkg={pkg}
           token={token}
           onClose={() => setEditing(false)}
           onSaved={(saved) => {
-            setSavedDescription({ name: pkg.name, description: saved });
+            setSavedEdit(saved);
             setEditing(false);
           }}
         />

@@ -74,8 +74,8 @@ export default function PackageCard({ pkg, onEdit, onDelete }) {
             variant="ghost"
             size="sm"
             icon={Pencil}
-            aria-label={`Edit description of ${name}`}
-            title="Edit description"
+            aria-label={`Edit ${name}`}
+            title="Edit description and keywords"
             className={styles.action}
             onClick={() => onEdit(pkg)}
           />
