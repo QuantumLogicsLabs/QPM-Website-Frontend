@@ -152,7 +152,7 @@ export default function FileDropzone({
         <span className={styles.meta}>
           Browsers let a picker choose either files or one folder, not both — to add files and folders
           in one go, drag them here together. Every pick adds to the list. Up to 100 MB in total;
-          node_modules and .git are skipped.
+          node_modules, quantum_qubits and .git are skipped.
         </span>
       </div>
 

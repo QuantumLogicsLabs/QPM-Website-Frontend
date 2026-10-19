@@ -44,7 +44,7 @@ export function validateGithubRepo(url) {
   return parseGithubRepo(url) ? null : "Use a GitHub repository URL, e.g. https://github.com/owner/repo";
 }
 
-const IGNORED_SEGMENTS = new Set([".git", "node_modules", ".DS_Store"]);
+const IGNORED_SEGMENTS = new Set([".git", "node_modules", "quantum_qubits", ".DS_Store"]);
 
 /** Paths the registry never packs (mirrors the backend), so they aren't even offered. */
 export const isIgnoredPath = (path) => path.split("/").some((segment) => IGNORED_SEGMENTS.has(segment));
