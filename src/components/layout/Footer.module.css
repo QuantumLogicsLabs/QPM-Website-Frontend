@@ -73,8 +73,7 @@
   text-transform: uppercase;
 }
 
-.links,
-.stack {
+.links {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -89,15 +88,12 @@
   color: var(--text);
 }
 
-.stack li {
-  display: flex;
+.links .more {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  color: var(--text-muted);
-}
-
-.stack svg {
-  color: var(--text-dim);
+  gap: var(--space-1);
+  color: var(--text-accent);
+  font-weight: 600;
 }
 
 .bottom {

@@ -1,14 +1,16 @@
 import { Link } from "react-router";
-import { Database, HardDrive, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { API_BASE } from "@/api/client";
 import { getHealth } from "@/api/registry";
 import { useResource } from "@/hooks/useResource";
 import { cn } from "@/utils/cn";
+import { GUIDES } from "@/pages/Guides/guides";
 import Logo from "./Logo";
 import styles from "./Footer.module.css";
 
 const YEAR = new Date().getFullYear();
 const REPO_URL = "https://github.com/QuantumLogicsLabs/QPM-Website";
+const FOOTER_GUIDES = GUIDES.slice(0, 3);
 
 const STATUS_COPY = {
   checking: "Checking registry status…",
@@ -66,23 +68,22 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <div className={styles.column}>
-          <h2 className={styles.heading}>Built on</h2>
-          <ul role="list" className={styles.stack}>
+        <nav aria-label="Guides" className={styles.column}>
+          <h2 className={styles.heading}>Guides</h2>
+          <ul role="list" className={styles.links}>
+            {FOOTER_GUIDES.map(({ slug, title }) => (
+              <li key={slug}>
+                <Link to={`/guides/${slug}`}>{title}</Link>
+              </li>
+            ))}
             <li>
-              <Database size={15} aria-hidden="true" />
-              MongoDB metadata
-            </li>
-            <li>
-              <HardDrive size={15} aria-hidden="true" />
-              Google Drive storage
-            </li>
-            <li>
-              <ShieldCheck size={15} aria-hidden="true" />
-              JWT authentication
+              <Link to="/guides" className={styles.more}>
+                All guides
+                <ArrowRight size={14} aria-hidden="true" />
+              </Link>
             </li>
           </ul>
-        </div>
+        </nav>
       </div>
 
       <div className={cn("container", styles.bottom)}>
